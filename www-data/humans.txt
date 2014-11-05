@@ -1,0 +1,15 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    abhishekkr -- OpenChaos -- @abionic
+
+# THANKS
+
+    All FOSS contributors and supporters.
+
+# TECHNOLOGY COLOPHON
+
+    HTML5, CSS3
+    jQuery, Modernizr
