@@ -1,0 +1,8 @@
+---
+bind_config_basepath: /etc/bind
+bind_user: bind
+bind_group: bind
+bind_service_name: bind9
+bind_pkgs:
+  - bind9
+  - dnsutils

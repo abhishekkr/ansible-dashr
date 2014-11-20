@@ -1,0 +1,17 @@
+- hosts: localhost
+  vars:
+    bind_config_master_zones:
+      - name: example.com
+    
+    bind_config_master_allow_transfer:
+      - 127.0.0.1
+      - 127.0.0.2
+    
+    bind_config_slave_zones:
+      - name: example.net
+        masters: [ '127.1.0.1', '127.1.0.2' ]
+        zones:
+          - example.net
+          - example.org
+  roles:
+    - ansible-role-bind

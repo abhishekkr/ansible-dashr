@@ -1,0 +1,11 @@
+---
+bind_config_master_zones: []
+bind_config_master_allow_transfer: []
+bind_config_master_forwarders: [ '0.0.0.0' ]
+bind_config_slave_zones: []
+bind_service_state: started
+bind_service_enabled: yes
+bind_pkg_state: installed
+bind_base_zones_path: '/var/lib/bind'
+bind_masterzones_path: 'masters'
+bind_slavezones_path: 'slaves'

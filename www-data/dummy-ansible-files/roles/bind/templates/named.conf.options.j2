@@ -1,0 +1,54 @@
+// {{ ansible_managed }}
+
+options {
+        directory "/var/cache/bind";
+
+        // If there is a firewall between you and nameservers you want
+        // to talk to, you might need to uncomment the query-source
+        // directive below.  Previous versions of BIND always asked
+        // questions using port 53, but BIND 8.1 and later use an unprivileged
+        // port by default.
+
+        //query-source address * port 53;
+  
+        query-source address * port *;
+
+        transfer-source *;
+
+        notify-source *;
+
+        allow-transfer {
+        {% for allow_transfer in bind_config_master_allow_transfer %}
+            {{ allow_transfer }};
+        {% endfor %}
+        };
+
+        notify yes;
+
+        also-notify {
+        };
+
+        //provide-ixfr no ;
+
+        // If your ISP provided one or more IP addresses for stable
+        // nameservers, you probably want to use them as forwarders.
+        // Uncomment the following block, and insert the addresses replacing
+        // the all-0's placeholder.
+
+        forwarders {
+        {% for forwarders in bind_config_master_forwarders %}
+            {{ forwarders }};
+        {% endfor %}
+        };
+
+        //dnssec-enable yes;
+        //dnssec-validation yes;
+
+        auth-nxdomain no;    # conform to RFC1035
+  
+        listen-on-v6 { any; };
+
+        allow-query { any; };              // This is the default
+        recursion no;                      // Do not provide recursive service
+        zone-statistics yes;
+};

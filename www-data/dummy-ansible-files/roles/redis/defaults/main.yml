@@ -1,0 +1,31 @@
+---
+
+redis_bind_address: "0.0.0.0"
+redis_port: 6379
+redis_syslog_enabled: "yes"
+# Must be USER or between LOCAL0-LOCAL7.
+redis_syslog_facility: "local0"
+redis_logfile: /var/log/redis.log
+redis_databases: 16
+redis_database_save_times:
+  - [900, 1]
+  - [300, 10]
+  - [60, 10000]
+redis_dbfilename: dump.rdb
+redis_db_dir: /var/lib/redis
+redis_role: master
+redis_requirepass: false
+redis_pass: None
+redis_max_clients: 128
+redis_max_memory: 512mb
+redis_maxmemory_policy: volatile-lru
+redis_appendfsync: everysec
+# check https://www.kernel.org/doc/Documentation/sysctl/vm.txt
+# and http://redis.io/topics/faq
+redis_overcommit_memory: 1
+#If role is slave set these values too
+redis_master_ip: 1.1.1.1
+redis_master_port: 6379
+redis_master_auth: None
+
+

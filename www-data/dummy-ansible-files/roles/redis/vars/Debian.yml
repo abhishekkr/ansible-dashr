@@ -1,0 +1,4 @@
+---
+
+redis_service: redis-server
+redis_conf_dest: /etc/redis/redis.conf

@@ -1,0 +1,8 @@
+---
+
+memcached_port: 11211
+memcached_listen_address: 0.0.0.0
+memcached_max_conn: 1024
+memcached_cache_size: 64
+memcached_fs_file_max: 756024
+

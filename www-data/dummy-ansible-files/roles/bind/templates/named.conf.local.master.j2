@@ -1,0 +1,23 @@
+## {{ ansible_managed }}
+
+{% for master_zone in bind_config_master_zones %}
+zone "{{ master_zone.name }}" {
+    type master;
+    file "{{bind_base_zones_path}}/{{bind_masterzones_path}}/db.{{ master_zone.name }}";
+{% if master_zone.allow_transfer is defined %}
+    allow-transfer {
+{% for allow_transfer in master_zone.allow_transfer %}
+        {{ allow_transfer }};
+{% endfor %}
+    };
+{% endif %}
+{% if master_zone.allow_update is defined %}
+    allow-update {
+{% for allow_update in master_zone.allow_update %}
+        {{ allow_update }};
+{% endfor %}
+    };
+{% endif %}
+};
+
+{% endfor %}
