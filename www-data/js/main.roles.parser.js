@@ -55,7 +55,7 @@ function parseRoles(roles, path){
 }
 
 /* publishes Roles Details to a given div */
-function publishTasks(rolename, div_id){
+function publishRoleDetails(rolename, div_id){
   $DOM("#roleName").innerHTML = rolename;
   var tasks = rolesInfo[rolename].tasks;
   var innerHTML = "";
@@ -82,7 +82,7 @@ function publishTasks(rolename, div_id){
 $(function() {
   var innerHTML = "";
   for(var role_idx in roles){
-    innerHTML += "<li class=\"active\" onClick=\"publishTasks('" + roles[role_idx] + "', '#tasks');\" ><a href=\"#\"><i class=\"icon-chevron-right\"></i>" + roles[role_idx] + "</a></li>"
+    innerHTML += "<li class=\"active\" onClick=\"publishRoleDetails('" + roles[role_idx] + "', '#roleDetails');\" ><a href=\"#\"><i class=\"icon-chevron-right\"></i>" + roles[role_idx] + "</a></li>"
   }
   $DOM("#roleList").innerHTML = innerHTML;
 });
@@ -90,5 +90,5 @@ $(function() {
 
 /* parse and update roles */
 var rolesInfo = parseRoles(roles, roles_www_path);
-publishTasks(roles[0], '#tasks')
+publishRoleDetails(roles[0], '#roleDetails')
 

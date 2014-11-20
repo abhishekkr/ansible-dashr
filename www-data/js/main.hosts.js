@@ -22,14 +22,3 @@ $(function() {
   var firstHost = $('.hostEntry')[0];
 });
 
-$(function() {
-    for ( ) {
-    }
-    /*
-          <tr>
-            <td>{{FacterXYZ}}</td>
-            <td><span class="label">{{FacterXYZ_Value}}</span></td>
-          </tr>
-    */
-});
-
