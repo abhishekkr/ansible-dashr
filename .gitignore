@@ -12,3 +12,4 @@ temp/*
 *.lock
 *.sock
 dummy-ansible-files/logs/anisble.dummy.log
+www-data/dummy-ansible-files/logs/anisble.dummy.log
