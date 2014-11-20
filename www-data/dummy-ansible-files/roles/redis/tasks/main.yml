@@ -1,0 +1,43 @@
+---
+
+- name: Add the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install the epel packages 
+  yum: name=http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm state=present
+  when: ansible_os_family == "RedHat" and ansible_distribution != "Fedora"
+        and ansible_distribution_major_version == "6"
+
+- name: Install the epel packages 
+  yum: name=http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-1.noarch.rpm state=present
+  when: ansible_os_family == "RedHat" and ansible_distribution != "Fedora"
+        and ansible_distribution_major_version == "7"
+
+- name: Install the Redis packages 
+  yum: name={{ item }} state=present
+  with_items: redis_redhat_pkg
+  when: ansible_os_family == "RedHat"
+
+- name: Install the Redis packages 
+  apt: name={{ item }} state=present update_cache=yes
+  with_items: redis_ubuntu_pkg
+  environment: env
+  when: ansible_os_family == "Debian"
+
+- name: Copy the redis configuration file 
+  template: src=redis.conf.j2 dest={{ redis_conf_dest }}
+  notify: 
+   - restart redis 
+
+- name: Copy the rsyslogd configuration file for redis filter
+  template: src=rsyslogd.conf.j2 dest=/etc/rsyslog.d/redis.conf
+  when: redis_syslog_enabled == "yes"
+  notify:
+  - restart rsyslog
+
+- name: Set the kernel paramter for vm overcommit 
+  sysctl: name=vm.overcommit_memory value={{ redis_overcommit_memory }} state=present
+
+- name: start the redis service
+  service: name={{ redis_service }} state=started enabled=yes
+

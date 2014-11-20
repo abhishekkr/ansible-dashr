@@ -5,7 +5,6 @@ hostINIConf = loadURI("./dummy-ansible-files/inventories/env.alpha");
 hostINI = parseINIHiera(hostINIConf);
 
 $(function() {
-  console.log("<<<<<<<<<<");
   hosts = $('#hosts')
 
   var hostsHTML = ""
@@ -21,6 +20,16 @@ $(function() {
   }
   hosts.append(hostsHTML);
   var firstHost = $('.hostEntry')[0];
-  console.log(firstHost);
+});
+
+$(function() {
+    for ( ) {
+    }
+    /*
+          <tr>
+            <td>{{FacterXYZ}}</td>
+            <td><span class="label">{{FacterXYZ_Value}}</span></td>
+          </tr>
+    */
 });
 
