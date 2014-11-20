@@ -1,0 +1,21 @@
+---
+
+- hosts: alpha
+  roles:
+    - ntp
+
+- hosts: appservers
+  roles:
+    - { role: nginx, dir: '/opt/www',  port: 8800 }
+    - { role: redis, dir: '/opt/redis',  port: 8880 }
+
+- hosts: databases
+  roles:
+    - mysql
+    - memcached
+
+- hosts: api
+  roles:
+    - bind
+    - memcached
+    - { role: redis, dir: '/opt/redis',  port: 8880 }

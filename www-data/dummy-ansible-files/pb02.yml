@@ -1,0 +1,18 @@
+---
+- hosts: webservers
+  vars:
+    http_port: 80
+    max_clients: 200
+  remote_user: root
+  tasks:
+  - name: ensure apache is at the latest version
+    yum: pkg=httpd state=latest
+  - name: ensure apache is running
+    service: name=httpd state=started
+  - name: user tmp dir
+    file: state=directory path=/tmp/{{ ansible_user }}
+    notify:
+    - restart apache
+  handlers:
+    - name: restart apache
+      service: name=httpd state=restarted
