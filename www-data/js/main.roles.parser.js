@@ -77,6 +77,17 @@ function publishTasks(rolename, tasks, div_id){
 
 /*********************** main() *******************/
 
+/* update roles sidebar */
+$(function() {
+  var innerHTML = "";
+  for(var role_idx in roles){
+    innerHTML += "<li class=\"active\"><a href=\"#\"><i class=\"icon-chevron-right\"></i>" + roles[role_idx] + "</a></li>"
+  }
+  $DOM("#roleList").innerHTML = innerHTML;
+});
+
+
+/* parse and update roles */
 $(function() {
   var rolesInfo = parseRoles(roles, roles_www_path);
   for(var role_idx in roles){
