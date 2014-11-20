@@ -11,3 +11,4 @@ temp/*
 *.cfg
 *.lock
 *.sock
+dummy-ansible-files/logs/anisble.dummy.log
