@@ -55,23 +55,24 @@ function parseRoles(roles, path){
 }
 
 /* publishes Roles Details to a given div */
-function publishTasks(rolename, tasks, div_id){
-  var innerHTML = "<div class='role'><h2 class='role_name'>" +rolename + "</h2><br/>";
+function publishTasks(rolename, div_id){
+  $DOM("#roleName").innerHTML = rolename;
+  var tasks = rolesInfo[rolename].tasks;
+  var innerHTML = "";
   for(var task_idx in tasks){
     var task = tasks[task_idx];
     var task_idx_human = parseInt(task_idx) + 1;
-    innerHTML += "<div class='task'><b class='task_name'>(" + task_idx_human + ".) " + task["name"] + "</b><br/>";
-    innerHTML += "<ul class='task_defs'>";
+    innerHTML += "<tr class='task'> <td>#" + task_idx_human + " <b class='task_name'>" + task["name"] + "</b></td>";
+    innerHTML += "<td><ul class='task_defs'>";
     for(var task_def_idx in task["task_def"]){
       var task_def = task["task_def"][task_def_idx];
       var task_def_class = " class='" + task_def + " " + task_idx + " "  + task_idx + "." + task_def_idx + "' ";
-      var task_def_style = " style='display:none' ";
+      var task_def_style = " style='' ";
       innerHTML += "<li" + task_def_class + task_def_style + ">" + task_def + "</li>";
     }
-    innerHTML += "</ul></div>";
+    innerHTML += "</ul></td></tr>";
   }
-  innerHTML += "</div>";
-  $DOM(div_id).innerHTML = $DOM(div_id).innerHTML + innerHTML + "<hr/>";
+  $DOM(div_id).innerHTML = innerHTML;
 }
 
 
@@ -81,18 +82,13 @@ function publishTasks(rolename, tasks, div_id){
 $(function() {
   var innerHTML = "";
   for(var role_idx in roles){
-    innerHTML += "<li class=\"active\"><a href=\"#\"><i class=\"icon-chevron-right\"></i>" + roles[role_idx] + "</a></li>"
+    innerHTML += "<li class=\"active\" onClick=\"publishTasks('" + roles[role_idx] + "', '#tasks');\" ><a href=\"#\"><i class=\"icon-chevron-right\"></i>" + roles[role_idx] + "</a></li>"
   }
   $DOM("#roleList").innerHTML = innerHTML;
 });
 
 
 /* parse and update roles */
-$(function() {
-  var rolesInfo = parseRoles(roles, roles_www_path);
-  for(var role_idx in roles){
-    var role = roles[role_idx];
-    var roleInfo = rolesInfo[role];
-    publishTasks(role, roleInfo['tasks'], '#tasks')
-  }
-});
+var rolesInfo = parseRoles(roles, roles_www_path);
+publishTasks(roles[0], '#tasks')
+
