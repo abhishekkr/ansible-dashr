@@ -5,36 +5,41 @@
 /* regex for Role tokens */
 var RoleRegex = {
     initiate: /^---\s*$/,
+    add_step: /^-\s*([a-zA-Z0-9]*)\s*:(.*)/,
     comment: /^\s*#(.*)/,
     not_blank: /[^\s]+/,
-    task_name: /^\- name:\s*(.*)$/
+    task_name: /name:\s*(.*)$/
 };
 
 /* parse line from Role */
 function parseRoleLine(Role, line){
+  if(RoleRegex.add_step.test(line)){
+    Role.task_idx += 1;
+    var match = line.match(RoleRegex.add_step);
+    Role.tasks[Role.task_idx] = {"name": match[1], "task_def": [match[2]]};
+  }
+
   if(RoleRegex.comment.test(line)){
     var match = line.match(RoleRegex.comment);
-    Role.comments[Role.task_count] += match[1];
+    Role.comments[Role.task_idx] += match[1];
 
   }else if(RoleRegex.task_name.test(line)){
     var match = line.match(RoleRegex.task_name);
-    Role.tasks[Role.task_count] = {"name": match[1], "task_def": []};
-    Role.task_count += 1;
+    Role.tasks[Role.task_idx]["name"] = match[1];
 
   }else if(RoleRegex.initiate.test(line)){
     console.log("Role definition started.");
 
   }else if(RoleRegex.not_blank.test(line)){
-    var current_role_idx = parseInt(Role.task_count) - 1;
-    var task_def = Role.tasks[current_role_idx]["task_def"];
+    var task_def = Role.tasks[Role.task_idx]["task_def"];
     task_def.push(line);
-    Role.tasks[current_role_idx]["task_def"] = task_def;
+    Role.tasks[Role.task_idx]["task_def"] = task_def;
   };
 }
 
 /* parse Ansible Role configuration files */
 function parseRole(data){
-  var Role = {tasks: [], comments: [], task_count: 0};
+  var Role = {tasks: [], comments: [], task_idx: -1};
   var lines = data.split(/\r\n|\r|\n/);
 
   for(var line_idx in lines){
