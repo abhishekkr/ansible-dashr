@@ -1,4 +1,6 @@
 ---
+# this playbook apply httpd and start it at webservers; create tmp dir
+
 - hosts: webservers
   vars:
     http_port: 80

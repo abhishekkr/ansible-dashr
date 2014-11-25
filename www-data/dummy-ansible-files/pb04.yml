@@ -1,4 +1,5 @@
 ---
+# This playbook says hi and includes pb01,pb02
 - name: this is a play at the top level of a file
   hosts: all
   remote_user: root

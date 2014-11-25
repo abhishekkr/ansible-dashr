@@ -42,35 +42,9 @@
     </div>
   </header>
   <div class="row-fluid">
-    <div id="hosts" class="span3 bs-docs-sidebar">
-      <h3>Groups</h3>
-      <!--Sidebar content-->
-        <!--<li class="active"><a href="#"><i class="icon-chevron-right"></i> www1.ansible.org</a></li>-->
-    </div>
-    <div class="span9">
-      <h2>{{HostName}}</h2>
+    <div class="span12">
+      <h2>{{ Form help runner command formation. }}</h2>
       <!--Body content-->
-      <dl class="dl-horizontal">
-        <dt>Group:</dt>
-        <dd>frontend</dd>
-        <dt>IPv4:</dt>
-        <dd>{{HostIP}}</dd>
-      </dl>
-      <table class="table table-striped table-bordered">
-        <caption>Attributes inferenced from Inventory and Group/Host Vars</caption>
-        <thead>
-          <tr>
-            <th>Variable</th>
-            <th>Inferenced Value</th>
-          </tr>
-        </thead>
-        <tbody id="host_details">
-          <tr>
-            <td>{{FacterXYZ}}</td>
-            <td><span class="label">{{FacterXYZ_Value}}</span></td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 
@@ -86,6 +60,5 @@
 
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
-        <script src="js/main.hosts.js"></script>
     </body>
 </html>

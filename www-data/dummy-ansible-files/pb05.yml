@@ -1,4 +1,5 @@
 ---
+# This playbook applies ntp at alpha, nginx+redis at app, mysql+memcahced at db, bind+memchached at api
 
 - hosts: alpha
   roles:

@@ -1,11 +1,12 @@
 ---
+# this playbook apply pb01 with user=timmy+alice+bob also with tom
 tasks:
   - include: pb01.yml wp_user=timmy
   - include: pb01.yml wp_user=alice
   - include: pb01.yml wp_user=bob
   - include: pb01.yml
     vars:
-      wp_user: timmy
+      wp_user: tom
       some_list_variable:
         - alpha
         - beta
