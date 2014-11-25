@@ -2,34 +2,58 @@
 * javascript library capable of parsing Ansible Playbooks to a desired dictionary
 */
 
+/* file ext */
+var FileExtRegex = {
+    none: /[^\.]/,
+    yaml: /\.ya?ml$/
+}
+
 /* regex for Playbook tokens */
 var PlaybookRegex = {
     blank: /^\s*$/,
     initiate: /^---\s*$/,
+    add_step: /^-\s*([a-zA-Z0-9]*)\s*:(.*)/,
     comment: /^\s*#(.*)/,
-    include: /^\- include:\s*(.*)\s*$/,
-    hosts: /^\- hosts:\s*(.*)\s*$/,
-    _roles: /\s*\- roles:\s*$/,
-    _role_with_def: /\s*\-\s*\{\s*role:\s*(.*)\s*\}\s*$/,
-    _role_without_def: /\s*\-\s*(.*)\s*$/
+    include: /include:\s*(.*)\s*$/,
+    hosts: /hosts:\s*(.*)\s*$/,
+    _roles: /(\s*)roles:\s*$/,
+    __role_with_def: /\s*\-\s*\{\s*role:\s*(.*)\s*\}\s*$/,
+    __role_without_def: /\s*\-\s*(.*)\s*$/,
+    _vars: /(\s*)vars:\s*$/,
+    __var_value: /^\s*(.*)\s*:\s*(.*)\s*$/,
 };
 
+/* update Playbook info for included playbook */
+function includePlaybook(Playbook, playbook_name, path){
+  var playbookData = loadURI(path + "/" + playbook_name);
+
+  var lines = playbookData.split(/\r\n|\r|\n/);
+  for(var line_idx in lines){
+    parsePlaybookLine(Playbook, lines[line_idx], path);
+  }
+}
+
 /* parse line from Playbook */
-function parsePlaybookLine(Playbook, line){
+function parsePlaybookLine(Playbook, line, path){
+  if(PlaybookRegex.add_step.test(line)){
+    Playbook.playbook_step_idx += 1;
+    var match = line.match(PlaybookRegex.add_step);
+    Playbook.playbook_steps[Playbook.playbook_step_idx] = {"name": match[2], "type": match[1]};
+  }
+
   if(PlaybookRegex.blank.test(line)){
     return;
 
   }else if(PlaybookRegex.comment.test(line)){
     var match = line.match(PlaybookRegex.comment);
-    Playbook.comments[Playbook.playbook_step_count] += match[1];
+    Playbook.comments[Playbook.playbook_step_idx] += match[1];
 
   }else if(PlaybookRegex.include.test(line)){
     var match = line.match(PlaybookRegex.include);
-    console.log("Include:", match[1]);
+    includePlaybook(Playbook, match[1], path);
 
   }else if(PlaybookRegex.hosts.test(line)){
     var match = line.match(PlaybookRegex.hosts);
-    console.log("Hosts:", match[1]);
 
   }else if(PlaybookRegex.initiate.test(line)){
     console.log("Playbook definition started.");
@@ -37,12 +61,12 @@ function parsePlaybookLine(Playbook, line){
 }
 
 /* parse Ansible Playbook configuration files */
-function parsePlaybook(data){
-  var Playbook = {playbook_steps: [], comments: [], playbook_step_count: 0};
+function parsePlaybook(data, path){
+  var Playbook = {playbook_steps: [], comments: [], playbook_step_idx: -1};
   var lines = data.split(/\r\n|\r|\n/);
 
   for(var line_idx in lines){
-    parsePlaybookLine(Playbook, lines[line_idx]);
+    parsePlaybookLine(Playbook, lines[line_idx], path);
   }
   return Playbook;
 }
@@ -52,8 +76,15 @@ function parsePlaybooks(playbooks, path){
   var playbooksInfo = {};
   for(var playbook_idx in playbooks){
     var playbook = playbooks[playbook_idx];
-    var playbookData = loadURI(path + "/" + playbook + ".yml");
-    playbooksInfo[playbook] = parsePlaybook(playbookData);
+    var playbook_name = playbook;
+    console.log("loading playbook", playbook)
+
+    if(!FileExtRegex.yaml.test(playbook)){
+      playbook_name = playbook + ".yml";
+    }
+
+    var playbookData = loadURI(path + "/" + playbook_name);
+    playbooksInfo[playbook] = parsePlaybook(playbookData, path);
   }
   return playbooksInfo;
 }
@@ -64,6 +95,7 @@ function publishPlaybookDetails(playbook_name, div_id){
   $DOM("#playbookName").innerHTML = playbook_name;
   var playbook_steps = playbooksInfo[playbook_name].playbook_steps;
   var innerHTML = "";
+
   for(var playbook_step_idx in playbook_steps){
     var playbook_step = playbook_steps[playbook_step_idx];
     var playbook_step_idx_human = parseInt(playbook_step_idx) + 1;
