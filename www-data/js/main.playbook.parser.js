@@ -8,18 +8,29 @@ var FileExtRegex = {
     yaml: /\.ya?ml$/
 }
 
-YAML2JSON = function (playbook_uri) {
+function playbookPath(playbook_name){
+  return playbooks_www_path + "/" + playbook_name;
+}
+
+/*common for all YAML, needs extraction*/
+var YAMLURI2JSON = function (playbook_uri) {
   "use strict";
   var data = loadURI(playbook_uri);
   return jsyaml.load(data);
 };
 
-
-/* parse Ansible Playbook configuration files */
-function parsePlaybook(playbook_uri){
-  console.log(playbook_uri);
-  var playbookJSON = YAML2JSON(playbook_uri);
-  return playbookJSON;
+/**/
+function PlaybookStepToHTML(playbook_step){
+  var stepHTML = "";
+  for(var key in playbook_step){
+    if(key == "include"){
+      playbooksInfo[playbook_step[key]] = YAMLURI2JSON(playbookPath(playbook_step[key]))
+      stepHTML += "<div><i>" + key + "</i>: <b><a href='#' onClick='publishPlaybookDetails(\"" + playbook_step[key] + "\", \"#playbookDetails\")'>" + playbook_step[key] + "</a></b></div>"
+    } else {
+      stepHTML += "<div><i>" + key + "</i>: <b>" + playbook_step[key] + "</b></div>"
+    }
+  }
+  return stepHTML;
 }
 
 /* parse all playbooks from a list at given path */
@@ -28,13 +39,11 @@ function parsePlaybooks(playbooks, path){
   for(var playbook_idx in playbooks){
     var playbook = playbooks[playbook_idx];
     var playbook_name = playbook;
-    console.log("loading playbook", playbook)
-
     if(!FileExtRegex.yaml.test(playbook)){
       playbook_name = playbook + ".yml";
     }
 
-    playbooksInfo[playbook] = parsePlaybook(path + "/" + playbook_name);
+    playbooksInfo[playbook] = YAMLURI2JSON(path + "/" + playbook_name);
   }
   return playbooksInfo;
 }
@@ -46,7 +55,7 @@ function publishPlaybookDetails(playbook_name, div_id){
   var playbook_steps = playbooksInfo[playbook_name];
   var innerHTML = "";
   for( var step_idx in playbook_steps){
-    innerHTML += "<tr>#" + step_idx + " " + JSON.stringify(playbook_steps[step_idx]) + "</tr>";
+    innerHTML += "<tr><td>#" + step_idx + "</td><td>" + PlaybookStepToHTML(playbook_steps[step_idx]) + "</td></tr>";
   }
  
   $DOM(div_id).innerHTML = innerHTML;
