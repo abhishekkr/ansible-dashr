@@ -29,7 +29,7 @@ function publishRoleDetails(rolename, div_id){
     var count = 0;
     for(var inner_task_key in task){
       if(count == 0){
-        innerHTML += "<td>#" + task_idx + " <i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "<b></td><td>"
+        innerHTML += "<td>#" + task_idx_human + " <i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "<b></td><td>"
       } else {
         innerHTML += "<div><i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "</b></div>"
       }
