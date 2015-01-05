@@ -12,16 +12,59 @@ function playbookPath(playbook_name){
   return playbooks_www_path + "/" + playbook_name;
 }
 
+/* html-ize role like dict details for playbook */
+function DictToHTML(tasks){
+  console.log("DictToHTML", tasks); /***********/
+  var innerHTML = "";
+  for(var task_idx in tasks){
+    innerHTML += GeneralStepToHTML(task_idx, tasks[task_idx]);
+  }
+  return innerHTML;
+}
+
+/* html-ize role like list details for playbook */
+function ListToHTML(tasks){
+  console.log("ListToHTML", tasks); /***********/
+  var innerHTML = "<ul>";
+  for(var task_idx in tasks){
+    innerHTML += "<li>" + GeneralStepToHTML(task_idx, tasks[task_idx])  + "</li>";
+  }
+  innerHTML += "</ul>";
+  return innerHTML;
+}
+
+/* html-ize value to steps */
+function GeneralStepToHTML(step_key, step){
+  console.log("GeneralStepToHTML", step_key, step); /***********/
+  var stepHTML = "";
+  if(typeof(step) == "object"){
+    stepHTML += "<blockquote>";
+    if (step.length == undefined){ //dictionary
+      stepHTML += DictToHTML(step)
+    } else { //list
+      stepHTML += ListToHTML(step)
+    }
+    stepHTML += "<hr/></blockquote>"
+  } else {
+      stepHTML += "<div><i>" + step_key + "</i>: <b>" + step + "</b></div>";
+  }
+  return stepHTML;
+}
+
 /* convert playbook step to html-ize */
 function PlaybookStepToHTML(playbook_step){
   var stepHTML = "";
+  var count = 0;
   for(var key in playbook_step){
     if(key == "include"){
-      playbooksInfo[playbook_step[key]] = YAMLURI2JSON(playbookPath(playbook_step[key]))
-      stepHTML += "<div><i>" + key + "</i>: <b><a href='#' onClick='publishPlaybookDetails(\"" + playbook_step[key] + "\", \"#playbookDetails\")'>" + playbook_step[key] + "</a></b></div>"
+      if(! playbooksInfo.hasOwnProperty(playbook_step[key])){
+        playbooksInfo[playbook_step[key]] = YAMLURI2JSON(playbookPath(playbook_step[key]));
+      }
+      stepHTML += "<div><i>" + key + "</i>: <b><a href='#' onClick='publishPlaybookDetails(\"" + playbook_step[key] + "\", \"#playbookDetails\")'>" + playbook_step[key] + "</a></b></div>";
     } else {
-      stepHTML += "<div><i>" + key + "</i>: <b>" + playbook_step[key] + "</b></div>"
+      stepHTML += GeneralStepToHTML(key, playbook_step[key])
     }
+    count += 1;
   }
   return stepHTML;
 }
@@ -48,9 +91,10 @@ function publishPlaybookDetails(playbook_name, div_id){
   var playbook_steps = playbooksInfo[playbook_name];
   var innerHTML = "";
   for( var step_idx in playbook_steps){
-    innerHTML += "<tr><td>#" + step_idx + "</td><td>" + PlaybookStepToHTML(playbook_steps[step_idx]) + "</td></tr>";
+    var step_idx_human = parseInt(step_idx) + 1;
+    innerHTML += "<tr><td>#" + step_idx_human + " " + PlaybookStepToHTML(playbook_steps[step_idx]) + "</td></tr>";
   }
- 
+
   $DOM(div_id).innerHTML = innerHTML;
 }
 
