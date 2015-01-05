@@ -13,3 +13,20 @@ function $DOM(a,b){var c=document.querySelectorAll(a);if(b===undefined){b=0}retu
 main()
 **********/
 
+/* return an index-ed key of a dictionary */
+function indexKeyFromDict(index, dict){
+  var count = 0;
+  for(var _k in dict){
+    if(count == index){ return _k }
+    count += 1;
+  }
+}
+
+/*converts data from YAML URL to JSON and return it
+requirs 'nodeca/js-yaml' */
+var YAMLURI2JSON = function (playbook_uri) {
+  "use strict";
+  var data = loadURI(playbook_uri);
+  return jsyaml.load(data);
+};
+

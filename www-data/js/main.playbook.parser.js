@@ -12,14 +12,7 @@ function playbookPath(playbook_name){
   return playbooks_www_path + "/" + playbook_name;
 }
 
-/*common for all YAML, needs extraction*/
-var YAMLURI2JSON = function (playbook_uri) {
-  "use strict";
-  var data = loadURI(playbook_uri);
-  return jsyaml.load(data);
-};
-
-/**/
+/* convert playbook step to html-ize */
 function PlaybookStepToHTML(playbook_step){
   var stepHTML = "";
   for(var key in playbook_step){
@@ -34,7 +27,7 @@ function PlaybookStepToHTML(playbook_step){
 }
 
 /* parse all playbooks from a list at given path */
-function parsePlaybooks(playbooks, path){
+function parsePlaybooks(playbooks){
   var playbooksInfo = {};
   for(var playbook_idx in playbooks){
     var playbook = playbooks[playbook_idx];
@@ -43,7 +36,7 @@ function parsePlaybooks(playbooks, path){
       playbook_name = playbook + ".yml";
     }
 
-    playbooksInfo[playbook] = YAMLURI2JSON(path + "/" + playbook_name);
+    playbooksInfo[playbook] = YAMLURI2JSON(playbookPath(playbook_name));
   }
   return playbooksInfo;
 }
@@ -62,7 +55,11 @@ function publishPlaybookDetails(playbook_name, div_id){
 }
 
 
-/*********************** main() *******************/
+/*********************** main() *******************
+require following variable pre-defined via main-data.js:
+* playbooks : list of all playbook names to be displayed {names should be with file extension unless it's just 'yml'}
+* playbooks_www_path : relative path for Playbook files
+**************************************************/
 
 /* update playbooks sidebar */
 $(function() {
@@ -74,6 +71,6 @@ $(function() {
 });
 
 /* parse and update playbook */
-var playbooksInfo = parsePlaybooks(playbooks, playbooks_www_path);
+var playbooksInfo = parsePlaybooks(playbooks);
 publishPlaybookDetails(playbooks[0], "#playbookDetails");
 
