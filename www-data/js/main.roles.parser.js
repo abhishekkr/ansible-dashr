@@ -52,13 +52,13 @@ function publishRoleDetails(rolename, div_id){
     var count = 0;
     for(var inner_task_key in task){
       if(count == 0){
-        innerHTML += "#" + task_idx_human + " <i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "<b> <i onClick=\"toggleTaskDetail(this);\" class=\"toggle-icon icon-plus-sign\"></i>";
+        innerHTML += "#" + task_idx_human + " <i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "</b> <i onClick=\"toggleTaskDetail(this);\" class=\"toggle-icon icon-plus-sign\"></i><blockquote class=\"task-detail\">";
       } else {
-        innerHTML += "<div class=\"task-detail\"><i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "</b></div>";
+        innerHTML += "<div><i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "</b></div>";
       }
       count += 1;
     }
-    innerHTML += "</td></tr>";
+    innerHTML += "</blockquote></td></tr>";
   }
   $DOM(div_id).innerHTML = innerHTML;
 }
