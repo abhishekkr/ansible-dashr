@@ -2,6 +2,29 @@
 * javascript library capable of parsing Ansible Roles to a desired dictionary
 */
 
+/* toggle Task Details */
+function toggleTaskDetail(self){
+  var task_detail_node = self.parentNode;
+  var task_details = task_detail_node.querySelectorAll(".task-detail");
+  var icon = task_detail_node.querySelector(".toggle-icon");
+  var display_mode;
+  if(icon.classList.contains("icon-plus-sign")){
+    icon.classList.remove('icon-plus-sign');
+    icon.classList.add('icon-minus-sign');
+    display_mode = "block";
+  } else {
+    icon.classList.remove('icon-minus-sign');
+    icon.classList.add('icon-plus-sign');
+    display_mode = "none";
+  }
+
+  for(var task_detail_idx=0; task_detail_idx < task_details.length; task_detail_idx++){
+    var task = task_details[task_detail_idx];
+    task.style.display = display_mode;
+  }
+}
+
+/* create a Role Path */
 function rolePath(role_name){
   return roles_www_path + "/" + role_name + "/tasks/main.yml";
 }
@@ -23,19 +46,19 @@ function publishRoleDetails(rolename, div_id){
   var tasks = rolesInfo[rolename];
   var innerHTML = "";
   for(var task_idx in tasks){
-    innerHTML += "<tr>"
+    innerHTML += "<tr><td>";
     var task = tasks[task_idx];
     var task_idx_human = parseInt(task_idx) + 1;
     var count = 0;
     for(var inner_task_key in task){
       if(count == 0){
-        innerHTML += "<td>#" + task_idx_human + " <i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "<b></td><td>"
+        innerHTML += "#" + task_idx_human + " <i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "<b> <i onClick=\"toggleTaskDetail(this);\" class=\"toggle-icon icon-plus-sign\"></i>";
       } else {
-        innerHTML += "<div><i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "</b></div>"
+        innerHTML += "<div class=\"task-detail\"><i>" + inner_task_key + "</i>: <b>" + task[inner_task_key]  + "</b></div>";
       }
       count += 1;
     }
-    innerHTML += "</td></tr>"
+    innerHTML += "</td></tr>";
   }
   $DOM(div_id).innerHTML = innerHTML;
 }
