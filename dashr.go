@@ -10,15 +10,14 @@ import (
 func main() {
 	dashr_ip := flag.String("fqdn", "127.0.0.1", "IP/FQDN to run HTTP listener at")
 	dashr_port := flag.String("http", "8001", "port to run HTTP listener at")
-	connection_string := fmt.Sprintf("%s:%s", *dashr_ip, *dashr_port)
-
 	www_data := flag.String("www", "www-data", "path to ansible dashr static site content")
-	www_data_uri := fmt.Sprintf("/%s/", *www_data)
-
 	ansible_setup := flag.String("ansible", "dummy-ansible-files", "path to ansible setup root of Playbooks, Roles Dir")
-	ansible_setup_uri := fmt.Sprintf("/%s/", *ansible_setup)
-
 	dashr_config := flag.String("config", "config", "path to fetch/save Config used by Static Site Content")
+	flag.Parse()
+
+	connection_string := fmt.Sprintf("%s:%s", *dashr_ip, *dashr_port)
+	www_data_uri := fmt.Sprintf("/%s/", *www_data)
+	ansible_setup_uri := fmt.Sprintf("/%s/", *ansible_setup)
 	dashr_config_uri := fmt.Sprintf("/%s/", *dashr_config)
 
 	dashr_fs := http.FileServer(http.Dir(*www_data))
