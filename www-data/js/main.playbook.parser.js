@@ -14,7 +14,6 @@ function playbookPath(playbook_name){
 
 /* html-ize role like dict details for playbook */
 function DictToHTML(tasks){
-  console.log("DictToHTML", tasks); /***********/
   var innerHTML = "";
   for(var task_idx in tasks){
     innerHTML += GeneralStepToHTML(task_idx, tasks[task_idx]);
@@ -24,18 +23,15 @@ function DictToHTML(tasks){
 
 /* html-ize role like list details for playbook */
 function ListToHTML(tasks){
-  console.log("ListToHTML", tasks); /***********/
-  var innerHTML = "<ul>";
+  var innerHTML = "";
   for(var task_idx in tasks){
-    innerHTML += "<li>" + GeneralStepToHTML(task_idx, tasks[task_idx])  + "</li>";
+    innerHTML += "<div class='list-item'>" + GeneralStepToHTML(undefined, tasks[task_idx])  + "</div>";
   }
-  innerHTML += "</ul>";
   return innerHTML;
 }
 
 /* html-ize value to steps */
 function GeneralStepToHTML(step_key, step){
-  console.log("GeneralStepToHTML", step_key, step); /***********/
   var stepHTML = "";
   if(typeof(step) == "object"){
     stepHTML += "<blockquote>";
@@ -46,8 +42,14 @@ function GeneralStepToHTML(step_key, step){
     }
     stepHTML += "<hr/></blockquote>"
   } else {
-      stepHTML += "<div><i>" + step_key + "</i>: <b>" + step + "</b></div>";
+      if(step_key != undefined){
+        stepHTML += "<div><i>" + step_key + "</i>:";
+      } else {
+        stepHTML += "* ";
+      }
+      stepHTML += "<b>" + step + "</b></div>";
   }
+  //console.log("GeneralStepToHTML:", step_key, "\ndef:", step, "\nResult:", stepHTML); /***********/
   return stepHTML;
 }
 
