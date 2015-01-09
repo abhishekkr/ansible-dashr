@@ -100,7 +100,7 @@ function publishPlaybookDetails(playbook_name, div_id){
 
 
 /*********************** main() *******************
-require following variable pre-defined via main-data.js:
+require following variable pre-defined via dashr-created config/js/main-data.js:
 * playbooks : list of all playbook names to be displayed {names should be with file extension unless it's just 'yml'}
 * playbooks_www_path : relative path for Playbook files
 **************************************************/
