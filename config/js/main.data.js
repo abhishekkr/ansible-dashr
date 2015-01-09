@@ -4,6 +4,11 @@
  * can be generaed using *WIP*
 */
 
+var inventories = ['env.alpha'];
+var inventories_www_path = "/dummy-ansible-files/inventories";
+var group_vars_www_path = "/dummy-ansible-files/group_vars";
+var host_vars_www_path = "/dummy-ansible-files/host_vars";
+
 //var playbook = ['pb01', 'pb02', 'pb03', 'pb04', 'pb05'];
 var playbooks = ['pb04', 'pb05'];
 var playbooks_www_path = "/dummy-ansible-files";
