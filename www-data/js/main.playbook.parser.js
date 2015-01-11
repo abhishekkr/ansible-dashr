@@ -33,8 +33,13 @@ function ListToHTML(tasks){
 /* html-ize value to steps */
 function GeneralStepToHTML(step_key, step){
   var stepHTML = "";
+  if(step_key != undefined){
+    stepHTML += "<div><i>" + step_key + "</i>:";
+  } else {
+    //stepHTML += "* ";
+  }
   if(typeof(step) == "object"){
-    stepHTML += "<blockquote>";
+    stepHTML += "</div><blockquote>";
     if (step.length == undefined){ //dictionary
       stepHTML += DictToHTML(step)
     } else { //list
@@ -42,15 +47,23 @@ function GeneralStepToHTML(step_key, step){
     }
     stepHTML += "<hr/></blockquote>"
   } else {
-      if(step_key != undefined){
-        stepHTML += "<div><i>" + step_key + "</i>:";
-      } else {
-        stepHTML += "* ";
-      }
-      stepHTML += "<b>" + step + "</b></div>";
+    stepHTML += "<b>" + step + "</b></div>";
   }
-  //console.log("GeneralStepToHTML:", step_key, "\ndef:", step, "\nResult:", stepHTML); /***********/
   return stepHTML;
+}
+
+function IncludeToHTML(include_value){
+  var innerHTML = "";
+  if(typeof(include_value) == "string"){
+    include_value = [include_value];
+  }
+  for(var playbook_idx in include_value){
+    if(! playbooksInfo.hasOwnProperty(include_value[playbook_idx])){
+      playbooksInfo[include_value[playbook_idx]] = YAMLURI2JSON(playbookPath(include_value[playbook_idx]));
+    }
+    innerHTML += "<div><i>include</i>: <b><a href='#' onClick='publishPlaybookDetails(\"" + include_value[playbook_idx] + "\", \"#playbookDetails\")'>" + include_value[playbook_idx] + "</a></b></div>";
+  }
+  return innerHTML;
 }
 
 /* convert playbook step to html-ize */
@@ -59,10 +72,7 @@ function PlaybookStepToHTML(playbook_step){
   var count = 0;
   for(var key in playbook_step){
     if(key == "include"){
-      if(! playbooksInfo.hasOwnProperty(playbook_step[key])){
-        playbooksInfo[playbook_step[key]] = YAMLURI2JSON(playbookPath(playbook_step[key]));
-      }
-      stepHTML += "<div><i>" + key + "</i>: <b><a href='#' onClick='publishPlaybookDetails(\"" + playbook_step[key] + "\", \"#playbookDetails\")'>" + playbook_step[key] + "</a></b></div>";
+      stepHTML += IncludeToHTML(playbook_step[key])
     } else {
       stepHTML += GeneralStepToHTML(key, playbook_step[key])
     }
