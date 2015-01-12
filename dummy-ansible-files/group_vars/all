@@ -1,0 +1,13 @@
+---
+
+some_path: /tmp/some
+someone_path: {{ some_path }}/one
+something_path: {{ some_path }}/thing
+somebody_path: {{ some_path }}/body
+somewhere_path: {{ some_path }}/where
+somehow_path: {{ some_path }}/how
+
+temp_path: /tmp/temp
+
+this_user: webserver
+this_group: wheel
