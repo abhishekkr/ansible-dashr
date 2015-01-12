@@ -4,7 +4,7 @@
  * can be generaed using *WIP*
 */
 
-var inventories = ['env.alpha'];
+var inventories = ['env.alpha', 'env.beta'];
 var inventories_www_path = "/dummy-ansible-files/inventories";
 var group_vars_www_path = "/dummy-ansible-files/group_vars";
 var host_vars_www_path = "/dummy-ansible-files/host_vars";
