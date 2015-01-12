@@ -30,5 +30,7 @@ func main() {
 	http.Handle(dashr_config_uri, http.StripPrefix(dashr_config_uri, config_fs))
 
 	log.Println("Ansible Dashr @", connection_string)
-	http.ListenAndServe(connection_string, nil)
+	if err := http.ListenAndServe(connection_string, nil); err != nil {
+		fmt.Println("ERROR: Failed to start server.", err.Error())
+	}
 }
