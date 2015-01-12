@@ -8,7 +8,8 @@ function UpdateInventoryList(inventory_list){
 
   var inventoryHTML = "<h3>Inventories</h3><ul class='nav nav-list bs-docs-sidenav'>";
   for(idx in inventory_list){
-    inventoryHTML += "<li class='inventoryEntry' id='" + inventory_list[idx] + "'><a href='#'><i class='icon-chevron-right'></i>" + inventory_list[idx] + "</a></li>";
+    var actionAttrib = "onClick='UpdateHostGroupList(\"" + inventory_list[idx] + "\");' onkeypress='UpdateHostGroupList(\"" + inventory_list[idx] + "\");' ";
+    inventoryHTML += "<li class='inventoryEntry' id='" + inventory_list[idx] + "' " + actionAttrib + "><a href='#'><i class='icon-chevron-right'></i>" + inventory_list[idx] + "</a></li>";
   }
   inventoryHTML += "  </ul>";
   inventories.innerHTML = inventoryHTML;
@@ -25,7 +26,8 @@ function UpdateHostGroupList(inventory){
     hostsHTML += "  <h4>" + _group + "</h4>";
     hostsHTML += "  <ul class='nav nav-list bs-docs-sidenav'>";
     for(var _host in hostINI[inventory][_group]){
-      hostsHTML += "    <li class='hostEntry' id='" + _host + "'><a href='#'><i class='icon-chevron-right'></i>" + _host + "</a></li>";
+      var actionAttrib = "onClick='UpdateHostDetails(\"" + _host + "\");' onkeypress='UpdateHostDetails(\"" + _host + "\");' ";
+      hostsHTML += "    <li class='hostEntry' id='" + _host + "' " + actionAttrib + "><a href='#'><i class='icon-chevron-right'></i>" + _host + "</a></li>";
     }
     hostsHTML += "  </ul>";
     hostsHTML += "</div><br/>";
