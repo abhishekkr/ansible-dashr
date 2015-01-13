@@ -78,5 +78,14 @@ $(function() {
 
 /* parse and update roles */
 var rolesInfo = parseRoles(roles);
-publishRoleDetails(roles[0], '#roleDetails')
 
+var get_vars = getUrlVars()
+if (get_vars.hasOwnProperty("role")) {
+  var q_role = decodeURIComponent(get_vars["role"]);
+  if(! rolesInfo.hasOwnProperty(q_role)){
+    rolesInfo[q_role] = YAMLURI2JSON([q_role]);
+  }
+  publishRoleDetails(q_role, '#roleDetails')
+} else {
+  publishRoleDetails(roles[0], '#roleDetails')
+}
