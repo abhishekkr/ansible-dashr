@@ -73,7 +73,7 @@ function IncludeToHTML(include_value){
     if(! playbooksInfo.hasOwnProperty(include_value[playbook_idx])){
       playbooksInfo[include_value[playbook_idx]] = YAMLURI2JSON(playbookPath(include_value[playbook_idx]));
     }
-    innerHTML += "<div><i>include</i>: <b><a href='#' onClick='publishPlaybookDetails(\"" + include_value[playbook_idx] + "\", \"#playbookDetails\")'>" + include_value[playbook_idx] + "</a></b></div>";
+    innerHTML += "<div class='ansible-playbook'><i>include</i>: <b><a href='#' onClick='publishPlaybookDetails(\"" + include_value[playbook_idx] + "\", \"#playbookDetails\")'>" + include_value[playbook_idx] + "</a></b></div>";
   }
   return innerHTML;
 }
@@ -110,7 +110,6 @@ function parsePlaybooks(playbooks){
 
 /* publishes Playbooks Details to a given div */
 function publishPlaybookDetails(playbook_name, div_id){
-  //
   $DOM("#playbookName").innerHTML = playbook_name;
   var playbook_steps = playbooksInfo[playbook_name];
   var innerHTML = "";
@@ -140,5 +139,14 @@ $(function() {
 
 /* parse and update playbook */
 var playbooksInfo = parsePlaybooks(playbooks);
-publishPlaybookDetails(playbooks[0], "#playbookDetails");
 
+var get_vars = getUrlVars()
+if (get_vars.hasOwnProperty("playbook")) {
+  var q_playbook = decodeURIComponent(get_vars["playbook"]);
+  if(! playbooksInfo.hasOwnProperty(q_playbook)){
+    playbooksInfo[q_playbook] = YAMLURI2JSON([q_playbook]);
+  }
+  publishPlaybookDetails(q_playbook, '#playbookDetails')
+} else {
+  publishPlaybookDetails(playbooks[0], "#playbookDetails");
+}
