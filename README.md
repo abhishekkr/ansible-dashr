@@ -1,11 +1,13 @@
 # W.I.P.
-* Version: 0.0.0 alpha
+* Version: 0.0.3 alpha
 
 ## Ansible Dashr
 
 ##### It's supposed to fill in basic Dashboard/Controller requirement of Ansible WebUI.
 
 > [Screenshots of fully/almost working features](./SCREENSHOTS.md)
+
+> [QuickStart Guide on HowTo use Ansible-Dashr](./HowTo.md)
 
 ---
 
@@ -16,6 +18,7 @@
 > * **Roles**: gives task level details for listed roles::main
 
 * InProgress
+> * **Dashr**: golang based HTTP service for all static content and task API (for Dashboard, Runner, etc)
 > * **Playbook**: provides linked view to workflow of listed playbook
 > * **HomePage**: provides quick view of all listed details and some-bits from Dashboars&Runner once they are completed
 
