@@ -8,6 +8,7 @@ j-minified
 **********/
 function loadURI(a){var b=new XMLHttpRequest();b.open("GET",a,false);b.send(); e=parseInt(b.status/100); if(e==4||e==5){return "";}; return b.responseText}
 function $DOM(a,b){var c=document.querySelectorAll(a);if(b===undefined){b=0}return c[b]}
+function getUrlVars(){var v={}; var p=window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,_k,_v){v[_k]=_v;}); return v;}
 
 /**********
 main()
