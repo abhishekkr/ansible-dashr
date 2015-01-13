@@ -47,11 +47,23 @@ function GeneralStepToHTML(step_key, step){
     }
     stepHTML += "<hr/></blockquote>"
   } else {
-    stepHTML += "<b>" + step + "</b></div>";
+    stepHTML += "<b>" + MarkStepByType(step_key, step) + "</b></div>";
   }
   return stepHTML;
 }
 
+/* mark Step if role */
+function MarkStepByType(step_key, step){
+  var innerHTML = "";
+  if(step_key == "role"){
+    innerHTML += "<span class='ansible-role'><b><a href='./roles.html?role=" + step + "'>" + step + "</a></b></span>";
+  } else {
+    innerHTML = step;
+  }
+  return innerHTML;
+}
+
+/* update include for playbook dictionary and mark its html */
 function IncludeToHTML(include_value){
   var innerHTML = "";
   if(typeof(include_value) == "string"){
