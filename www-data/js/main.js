@@ -6,7 +6,7 @@ var INIRegex={section:/^\s*\[\s*([^\]]*)\s*\]\s*$/,trueParam:/^\s*([\w\.\-\_]+)\
 /**********
 j-minified
 **********/
-function loadURI(a){var b=new XMLHttpRequest();b.open("GET",a,false);b.send();return b.responseText}
+function loadURI(a){var b=new XMLHttpRequest();b.open("GET",a,false);b.send(); e=parseInt(b.status/100); if(e==4||e==5){return "";}; return b.responseText}
 function $DOM(a,b){var c=document.querySelectorAll(a);if(b===undefined){b=0}return c[b]}
 
 /**********
