@@ -53,15 +53,52 @@ function UpdateHostDetails(hostname){
     hostsDLHTML += "<dt>" + _key + ":</dt><dd>" + inventory_file_details[_key] + "</dd>";
   }
   hostdetails.querySelector("dl").innerHTML = hostsDLHTML;
+  hostdetails.querySelector("#host_details_keyval").innerHTML = UpdateHostDetailsByVars(hostname, group_name, inventory);
+}
 
-  var group_vars_filedata = loadURI(group_vars_www_path + "/all");
-  group_vars_filedata = group_vars_filedata.replace(/{/g, "\\{").replace(/}/g, "\\}");
-  var group_vars = jsyaml.load(group_vars_filedata);
-  var hostsGroupVarHTML = "";
-  for(var _key in group_vars){
-    hostsGroupVarHTML += "<tr><td>" + _key + ":</td><td>" + group_vars[_key].replace(/\\{/g, "<i>{").replace(/\\}/g, "}</i>") + "</td></tr>"
+/*** update GroupVars applicable to Hostname ***/
+function UpdateHostDetailsByVars(hostname, group_name, inventory){
+  var host_vars = VarYAMLAsJSON(host_vars_www_path + "/" + hostname);
+  host_vars = VarsUpdatedFromGroup(inventory, group_name, host_vars)
+  var all_vars = VarYAMLAsJSON(group_vars_www_path + "/all");
+  for(var _k in all_vars){
+    if(! host_vars.hasOwnProperty(_k)){
+      host_vars[_k] = all_vars[_k];
+    }
   }
-  hostdetails.querySelector("#host_details_keyval").innerHTML = hostsGroupVarHTML;
+
+  var hostsGroupVarHTML = "";
+  for(var _key in host_vars){
+    hostsGroupVarHTML += "<tr><td>" + _key + ":</td><td>" + host_vars[_key].replace(/\\{/g, "<i>{").replace(/\\}/g, "}</i>") + "</td></tr>"
+  }
+  return hostsGroupVarHTML;
+}
+
+/*** return group_updated Var appended not overrideen ***/
+function VarsUpdatedFromGroup(inventory, group_name, var_dict){
+  var group_vars = VarYAMLAsJSON(group_vars_www_path + "/" + group_name);
+  for(var _k in group_vars){
+    if(! var_dict.hasOwnProperty(_k)){
+      var_dict[_k] = group_vars[_k];
+    }
+  }
+  for(var _group in hostINI[inventory]){
+    for(var _host in hostINI[inventory][_group]){
+        if(_host == group_name){
+          var_dict = VarsUpdatedFromGroup(inventory, _group, var_dict);
+          break;
+        }
+    }
+  }
+  return var_dict; 
+}
+
+/*** fetch var yaml as json ***/
+function VarYAMLAsJSON(var_path){
+  var group_vars_filedata = loadURI(var_path);
+  if (group_vars_filedata == "") {return {};}
+  group_vars_filedata = group_vars_filedata.replace(/{/g, "\\{").replace(/}/g, "\\}");
+  return jsyaml.load(group_vars_filedata);
 }
 
 /*** main() ***/
