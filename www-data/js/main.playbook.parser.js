@@ -22,10 +22,13 @@ function DictToHTML(tasks){
 }
 
 /* html-ize role like list details for playbook */
-function ListToHTML(tasks){
+function ListToHTML(task_type, tasks){
+  if(task_type == "roles"){
+    task_type = "role";
+  }
   var innerHTML = "";
   for(var task_idx in tasks){
-    innerHTML += "<div class='list-item'>" + GeneralStepToHTML(undefined, tasks[task_idx])  + "</div>";
+    innerHTML += "<div class='list-item'>" + GeneralStepToHTML(task_type, tasks[task_idx])  + "</div>";
   }
   return innerHTML;
 }
@@ -35,15 +38,13 @@ function GeneralStepToHTML(step_key, step){
   var stepHTML = "";
   if(step_key != undefined){
     stepHTML += "<div><i>" + step_key + "</i>:";
-  } else {
-    //stepHTML += "* ";
   }
   if(typeof(step) == "object"){
     stepHTML += "</div><blockquote>";
     if (step.length == undefined){ //dictionary
       stepHTML += DictToHTML(step)
     } else { //list
-      stepHTML += ListToHTML(step)
+      stepHTML += ListToHTML(step_key, step)
     }
     stepHTML += "<hr/></blockquote>"
   } else {
