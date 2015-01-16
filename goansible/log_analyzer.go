@@ -9,13 +9,12 @@ import (
 )
 
 var (
-	mainlogPattern = createPattern(`^(TASK\:|PLAY|FATAL\:|ok\:|changed\:|failed\:)`)
-	playPattern    = createPattern(`^PLAY\s*\[*([a-zA-Z0-9]*)\]*`)
-	taskPattern    = createPattern(`^TASK\:\s*\[([^\]]*)|([^\]]*)\]`)
-	fatalPattern   = createPattern(`^FATAL:\s*(.*)`)
-	okPattern      = createPattern(`^ok:\s*\[([^\]]*)|([^\]]*)\]`)
-	changedPattern = createPattern(`^changed:\s*\[([^\]]*)|([^\]]*)\]`)
-	failedPattern  = createPattern(`^failed:\s*\[([^\]]*)|([^\]]*)\]`)
+	mainlogPattern      = createPattern(`^(PLAY|TASK\:|FATAL\:|ok\:|changed\:|failed\:)`)
+	playPattern         = createPattern(`^PLAY\s*\[*([a-zA-Z0-9]*)\]*`)
+	taskPattern         = createPattern(`^TASK\:\s*\[\s*([^|\]]*)\s*|\s*([^|\]]*)\s*\]`)
+	fatalPattern        = createPattern(`^FATAL:\s*(.*)`)
+	statusPattern       = createPattern(`^(ok|changed|failed):\s*\[([^\]]*)\](.*)`)
+	statusDetailPattern = createPattern(`\s*=>\s*(.*)\s*`)
 )
 
 func createPattern(pattern string) *regexp.Regexp {
@@ -36,16 +35,25 @@ func lineToDetails(line, line_type string) {
 		fmt.Printf("TASK: %q\n", task[1])
 	case "FATAL:":
 		fatal := fatalPattern.FindStringSubmatch(line)
-		fmt.Printf("FATAL: %q\n", fatal)
+		fmt.Printf("FATAL: %q\n", fatal[1])
+	case "ok:", "changed:", "failed:":
+		status := statusPattern.FindStringSubmatch(line)
+		var statusDetail string
+		if statusDetailPattern.MatchString(status[3]) {
+			statusDetail = statusDetailPattern.FindStringSubmatch(status[3])[1]
+		}
+		fmt.Printf("status: %q\n%q\n%q\n", status[1], status[2], statusDetail)
+	}
+}
+
+func updateStatus(status []string) {
+	switch status[1] {
 	case "ok:":
-		ok := okPattern.FindStringSubmatch(line)
-		fmt.Printf("ok: %q\n", ok)
+		fmt.Printf("ok:\n")
 	case "changed:":
-		changed := changedPattern.FindStringSubmatch(line)
-		fmt.Printf("changed: %q\n", changed)
+		fmt.Printf("changed:\n")
 	case "failed:":
-		failed := failedPattern.FindStringSubmatch(line)
-		fmt.Printf("failed: %q\n", failed)
+		fmt.Printf("failed:\n")
 	}
 
 }
