@@ -14,7 +14,7 @@ var (
 	taskPattern         = createPattern(`^TASK\:\s*\[\s*([^|\]]*)\s*|\s*([^|\]]*)\s*\]`)
 	fatalPattern        = createPattern(`^FATAL:\s*(.*)`)
 	statusPattern       = createPattern(`^(ok|changed|failed):\s*\[([^\]]*)\](.*)`)
-	statusDetailPattern = createPattern(`\s*=>\s*(.*)\s*`)
+	statusDetailPattern = createPattern(`\s*=>\s*(.*)\s*`) //gives out json with task status detail for that node
 )
 
 func createPattern(pattern string) *regexp.Regexp {
@@ -42,20 +42,19 @@ func lineToDetails(line, line_type string) {
 		if statusDetailPattern.MatchString(status[3]) {
 			statusDetail = statusDetailPattern.FindStringSubmatch(status[3])[1]
 		}
-		fmt.Printf("status: %q\n%q\n%q\n", status[1], status[2], statusDetail)
+		updateStatus(status[1], status[2], statusDetail)
 	}
 }
 
-func updateStatus(status []string) {
-	switch status[1] {
-	case "ok:":
-		fmt.Printf("ok:\n")
-	case "changed:":
-		fmt.Printf("changed:\n")
-	case "failed:":
-		fmt.Printf("failed:\n")
+func updateStatus(status, node, detail string) {
+	switch status {
+	case "ok":
+		fmt.Printf("%s is ok:\n%s\n", node, detail)
+	case "changed":
+		fmt.Printf("%s is changed:\n%s\n", node, detail)
+	case "failed":
+		fmt.Printf("%s is failed:\n%s\n", node, detail)
 	}
-
 }
 
 func grep(regex *regexp.Regexp, filename string) {
