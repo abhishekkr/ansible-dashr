@@ -13,3 +13,4 @@ temp/*
 *.sock
 dummy-ansible-files/logs/anisble.dummy.log
 www-data/dummy-ansible-files/logs/anisble.dummy.log
+dummy-ansible-files/callbacks/*
