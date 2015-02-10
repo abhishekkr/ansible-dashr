@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 
+"""
+Author: [AbhishekKr <abhikumar@gmail.com>](http://abhishekkr.github.io)
+"""
+
 import os
 import yaml
 
 
-def refresh_host_yaml(host_yaml):
+def refresh_host_yaml(host_yaml, type={}):
     """ Prepares empty host yaml if not present. """
-    dct = {}
     with open(host_yaml, "w") as f:
-            yaml.dump(dct, f)
+            yaml.dump(type, f)
 
 
 def state_to_yaml(host_yaml, res, state=None):
@@ -27,9 +30,20 @@ def state_to_yaml(host_yaml, res, state=None):
         yaml.dump(newdct, f)
 
 
-def get_host_yaml(log_dir, host):
-    """ Return path for host yaml to be log created. """
-    return os.path.join(log_dir.strip(), host.split("->")[0].strip())
+def get_host_yaml(host_log, log_dir, host):
+    """ Update hostlog yaml with host name. Return path for host yaml to be log created. """
+    host = host.split("->")[0].strip()
+
+    with open(host_log) as f:
+        host_list = yaml.load(f)
+
+    if host not in host_list:
+        host_list.append(host)
+
+    with open(host_log, "w") as f:
+        yaml.dump(host_list, f)
+
+    return os.path.join(log_dir.strip(), host)
 
 
 class CallbackModule(object):
@@ -40,17 +54,25 @@ class CallbackModule(object):
 
     def __init__(self):
         self.dashr_log_directory = os.getenv('DASHR_LOG_DIRECTORY', '/var/log/ansible')
-        if not os.path.exists(self.dashr_log_directory):
-            os.makedirs(self.dashr_log_directory)
+
+        self.dashr_hostlog_directory = os.path.join(self.dashr_log_directory, "hosts")
+        if not os.path.exists(self.dashr_hostlog_directory):
+            os.makedirs(self.dashr_hostlog_directory)
+
+        self.dashr_hostlog = os.path.join(self.dashr_log_directory, "dashr_log_hostlist.yaml")
+        if not os.path.exists(self.dashr_hostlog):
+            refresh_host_yaml(self.dashr_hostlog, [])
 
     def on_any(self, *args, **kwargs):
         pass
 
     def runner_on_failed(self, host, res, ignore_errors=False):
-        state_to_yaml(get_host_yaml(self.dashr_log_directory, host) , res, "failed")
+        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+        state_to_yaml(host_yaml , res, "failed")
 
     def runner_on_ok(self, host, res):
-        state_to_yaml(get_host_yaml(self.dashr_log_directory, host), res, "ok")
+        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+        state_to_yaml(host_yaml, res, "ok")
 
     def runner_on_error(self, host, msg):
         pass
@@ -59,19 +81,23 @@ class CallbackModule(object):
         pass
 
     def runner_on_unreachable(self, host, res):
-        state_to_yaml(get_host_yaml(self.dashr_log_directory, host), res, "unreachable")
+        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+        state_to_yaml(host_yaml, res, "unreachable")
 
     def runner_on_no_hosts(self):
         pass
 
     def runner_on_async_poll(self, host, res, jid, clock):
-        state_to_yaml(get_host_yaml(self.dashr_log_directory, host), res)
+        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+        state_to_yaml(host_yaml, res)
 
     def runner_on_async_ok(self, host, res, jid):
-        state_to_yaml(get_host_yaml(self.dashr_log_directory, host), res, "ok")
+        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+        state_to_yaml(host_yaml, res, "ok")
 
     def runner_on_async_failed(self, host, res, jid):
-        state_to_yaml(get_host_yaml(self.dashr_log_directory, host), res, "failed")
+        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+        state_to_yaml(host_yaml, res, "failed")
 
     def playbook_on_start(self):
         pass
