@@ -69,7 +69,7 @@ function UpdateHostDetailsByVars(hostname, group_name, inventory){
 
   var hostsGroupVarHTML = "";
   for(var _key in host_vars){
-    var _host_vars_html = host_vars[_key].replace(/\\{/g, "<i>{").replace(/\\}/g, "}</i>");
+    var _host_vars_html = host_vars[_key].replace(/\{\{/g, "<i>{{").replace(/\}\}/g, "}}</i>");
     hostsGroupVarHTML += "<tr><td>" + _key + ":</td><td>" + _host_vars_html  + "</td></tr>"
   }
   return hostsGroupVarHTML;
@@ -99,7 +99,7 @@ function VarYAMLAsJSON(var_path){
   var group_vars_filedata = loadURI(var_path);
   if (group_vars_filedata == "") {return {};}
   // replacing only {|} which are not in quotes
-  group_vars_filedata = group_vars_filedata.replace(/(\{)(?=(?:(?:[^"]*"){2})*[^"]*$)/g, "\\{").replace(/(\})(?=(?:(?:[^"]*"){2})*[^"]*$)/g, "\\}");
+  group_vars_filedata = group_vars_filedata.replace(/(\{\{)(?=(?:(?:[^"]*"){2})*[^"]*$)/g, "\\{\\{").replace(/(\}\})(?=(?:(?:[^"]*"){2})*[^"]*$)/g, "\\}\\}");
   return jsyaml.load(group_vars_filedata);
 }
 
