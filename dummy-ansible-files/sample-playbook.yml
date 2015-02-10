@@ -1,0 +1,12 @@
+---
+- hosts: local
+  gather_facts: no
+  remote_user: root
+  tasks:
+      - name: test connection
+        debug: msg="yeah its running"
+        delegate_to: 127.0.0.1
+
+      - name: get url
+        get_url: url="http://www.ozarkia.net/bill/anarchism/rants/NetNeutrality.txt" dest="/tmp/net-neutrality.txt"
+        delegate_to: 127.0.0.1
