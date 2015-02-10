@@ -3,6 +3,7 @@
 *swp
 *~
 *.tmp
+*.pyc
 temp/*
 .bundle
 .venv
@@ -14,3 +15,4 @@ temp/*
 dummy-ansible-files/logs/anisble.dummy.log
 www-data/dummy-ansible-files/logs/anisble.dummy.log
 dummy-ansible-files/callbacks/*
+dummy-ansible-files/logs/*
