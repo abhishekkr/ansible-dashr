@@ -15,3 +15,6 @@ var playbooks_www_path = "/dummy-ansible-files";
 
 var roles = ['memcached', 'ntp', 'bind', 'mysql', 'nginx', 'redis'];
 var roles_www_path = "/dummy-ansible-files/roles";
+
+var dashr_log_directory = "/dummy-ansible-files/logs/hosts";
+var dashr_log_hostlist = "/dummy-ansible-files/logs/dashr_log_hostlist.yaml";
