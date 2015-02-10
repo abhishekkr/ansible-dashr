@@ -21,6 +21,7 @@
         <link rel="stylesheet" href="css/bootstrap-responsive.min.css">
         <link rel="stylesheet" href="css/main.css">
 
+        <script src="/config/js/main.data.js"></script>
         <script src="js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
     </head>
     <body>
@@ -28,7 +29,6 @@
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
 
-<h1>Work Not Started Yet.</h1>
 <div class="container">
   <header class="navbar">
     <div class="navbar-inner">
@@ -46,10 +46,10 @@
     <div class="span3 bs-docs-sidebar">
       <!--Sidebar content-->
       <ul id="perLogfile" class="nav nav-list bs-docs-sidenav">
-          <li><a href="#"><i class="icon-chevron-right"></i>Full Run</a></li>
-          <li><a href="#"><i class="icon-chevron-right"></i>Passed</a></li>
-          <li><a href="#"><i class="icon-chevron-right"></i>Changed</a></li>
-          <li><a href="#"><i class="icon-chevron-right"></i>Failed</a></li>
+          <li id="All"><a href="#"><i class="icon-chevron-right"></i>Full Run</a></li>
+          <li id="Passed"><a href="#"><i class="icon-chevron-right"></i>Passed</a></li>
+          <li id="Changed"><a href="#"><i class="icon-chevron-right"></i>Changed</a></li>
+          <li id="Failed"><a href="#"><i class="icon-chevron-right"></i>Failed</a></li>
         </ul>
     </div>
     <div class="span9">
@@ -59,13 +59,13 @@
         <caption>Hosts</caption>
         <thead>
           <tr>
-            <th>Playbook:Role:Task</th>
             <th>Host</th>
+            <th>Task</th>
             <th>Status</th>
             <th>Details</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="callbackDetails">
           <tr>
             <td rowspan="4">{{PlayBookName: Role: Task}}</td>
             <td>{{HostName}}</td>
@@ -87,7 +87,10 @@
 
         <script src="js/vendor/bootstrap.min.js"></script>
 
+        <script src="js/js-yaml.min.js"></script>
+
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
+        <script src="js/main.dashboard.js"></script>
     </body>
 </html>
