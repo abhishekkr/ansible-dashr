@@ -15,6 +15,34 @@ function getBadge(state){
   }
 }
 
+/* toggle DashbBoard Task Details */
+function toggleDashboardTaskDetails(self){
+  var task_detail_node = self.parentNode;
+  var task_details = task_detail_node.querySelector(".task-detail");
+  var icon = task_detail_node.querySelector(".toggle-icon");
+  var msg = task_detail_node.querySelector(".toggle-msg");
+  if(icon.classList.contains("icon-plus-sign")){
+    icon.classList.remove('icon-plus-sign');
+    icon.classList.add('icon-minus-sign');
+    task_details.style.display = "block";
+    msg.innerHTML = "hide details"
+  } else {
+    icon.classList.remove('icon-minus-sign');
+    icon.classList.add('icon-plus-sign');
+    task_details.style.display = "none";
+    msg.innerHTML = "show details"
+  }
+}
+
+function taskDetailsToHTML(details){
+  var _html = "<div><div onclick=\"toggleDashboardTaskDetails(this);\"><span class=\"toggle-icon icon-plus-sign\"></span><i class=\"toggle-msg\">show details</i></div><div class=\"task-detail\" style=\"display:none\">";
+  for(var detail_type in details){
+    _html += "<div>" + detail_type + ":" + details[detail_type] + "</div>";
+  }
+  _html += "</div></div>";
+  return _html;
+}
+
 function isElementNotInList(element, list){
   return list.indexOf(element) < 0
 }
@@ -35,7 +63,7 @@ function publishHostDetails(host, host_info, state_type){
     }
     _html += "  <td>" + task + "</td>";
     _html += "  <td><span class=\"badge " + getBadge(host_info[task]["state"]) + "\">" + host_info[task]["state"] + "<span></td>";
-    _html += "  <td>{{stdout/stderr/etc}}</td>";
+    _html += "  <td>" + taskDetailsToHTML(host_info[task]["details"]) + "</td>";
     _html += "</tr>";
     host = "";
   }
