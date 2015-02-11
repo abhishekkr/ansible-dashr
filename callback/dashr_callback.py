@@ -8,6 +8,19 @@ import os
 import yaml
 
 
+EXTRA_DETAILS = ['cmd', 'command', 'start', 'end', 'delta', 'msg', 'stdout', 'stderr']
+
+
+def prepare_extra_details(res):
+    """ Add EXTRA_DETAIL field matched details to task yaml. """
+    details = {}
+    if type(res) == type(dict()):
+      for field in EXTRA_DETAILS:
+        if field in res.keys():
+            details[field] = res[field].encode('utf-8')
+    return details
+
+
 def refresh_host_yaml(host_yaml, type={}):
     """ Prepares empty host yaml if not present. """
     with open(host_yaml, "w") as f:
@@ -24,7 +37,7 @@ def state_to_yaml(host_yaml, res, state=None):
     with open(host_yaml) as f:
         newdct = yaml.load(f)
 
-    newdct[str(module)] = { "state": str(state) }
+    newdct[str(module)] = { "state": str(state), "details": prepare_extra_details(res) }
 
     with open(host_yaml, "w") as f:
         yaml.dump(newdct, f)
