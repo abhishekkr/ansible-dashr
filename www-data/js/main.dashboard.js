@@ -6,8 +6,13 @@ function getBadge(state){
   switch (state) {
   case "unreachable":
   case "failed":
+    state_count["Failed"] += 1;
     return "badge-danger";
   case "ok":
+    state_count["Passed"] += 1;
+    return "badge-success";
+  case "ok":
+    state_count["Changed"] += 1;
     return "badge-success";
   default:
     console.log("Sorry, we are out of " + state + ".");
@@ -104,6 +109,7 @@ require following variable pre-defined via dashr-created config/js/main-data.js:
 
 /* parse and update host */
 var state_type = ["all"];
+var state_count = {"Passed":0, "Failed":0, "Changed":0};
 var hosts_info = [];
 var host_list = parseHostList(dashr_log_hostlist);
 
@@ -133,3 +139,17 @@ if (get_vars.hasOwnProperty("host")) {
 } else {
   prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", state_type);
 }
+
+document.querySelector("#AllCount").innerHTML = " [" + (state_count["Passed"] + state_count["Changed"] + state_count["Failed"]) + " Tasks]";
+document.querySelector("#PassedCount").innerHTML = " [" + (state_count["Passed"]) + " Tasks]";
+document.querySelector("#ChangedCount").innerHTML = " [" + (state_count["Changed"]) + " Tasks]";
+document.querySelector("#FailedCount").innerHTML = " [" + (state_count["Failed"]) + " Tasks]";
+
+$(function () {
+    var values = [], labels = [];
+    for(var _type in state_count){
+      labels.push(_type); values.push(state_count[_type]);
+    }
+    console.log(labels, values);
+    Raphael("summary", "215px", "215px").pieChart(215, 215, 100, values, labels, "#777");
+});
