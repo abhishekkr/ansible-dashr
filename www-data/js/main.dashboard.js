@@ -146,12 +146,40 @@ document.querySelector("#ChangedCount").innerHTML = " <span style=\"font-style: 
 document.querySelector("#FailedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (state_count["Failed"]) + " Tasks)</span>";
 
 $(function () {
-    var values = [], labels = [];
+    var pie_data = [];
     for(var _type in state_count){
-      labels.push(_type); values.push(state_count[_type]);
+      pie_data.push([_type, state_count[_type]]);
     }
-    console.log(labels, values);
-    //Raphael(10, 50, 640, 480).pieChart(320, 240, 100, [55, 20, 13, 32, 5, 1, 2]); 
-    document.querySelector("#summary").style.backgroundColor = "#999";
-    Raphael("summary").pieChart(115, 115, 50, values, labels, "#fff");
-});
+
+    $('#summary').highcharts({
+        chart: {
+          plotBackgroundColor: null,
+          plotBorderWidth: null,
+          plotShadow: false
+        },
+        title: {
+          text: 'Summary of run states for Ansible Runs'
+        },
+        tooltip: {
+          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+              style: {
+                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+              }
+            }
+          }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Browser share',
+            data: pie_data
+          }]
+      });
+  });
