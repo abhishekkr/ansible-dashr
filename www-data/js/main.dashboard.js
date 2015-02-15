@@ -140,10 +140,10 @@ if (get_vars.hasOwnProperty("host")) {
   prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", state_type);
 }
 
-document.querySelector("#AllCount").innerHTML = " [" + (state_count["Passed"] + state_count["Changed"] + state_count["Failed"]) + " Tasks]";
-document.querySelector("#PassedCount").innerHTML = " [" + (state_count["Passed"]) + " Tasks]";
-document.querySelector("#ChangedCount").innerHTML = " [" + (state_count["Changed"]) + " Tasks]";
-document.querySelector("#FailedCount").innerHTML = " [" + (state_count["Failed"]) + " Tasks]";
+document.querySelector("#AllCount").innerHTML = " <span style=\"font-style: italic;\">(" + (state_count["Passed"] + state_count["Changed"] + state_count["Failed"]) + " Tasks)</span>";
+document.querySelector("#PassedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (state_count["Passed"]) + " Tasks)</span>";
+document.querySelector("#ChangedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (state_count["Changed"]) + " Tasks)</span>";
+document.querySelector("#FailedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (state_count["Failed"]) + " Tasks)</span>";
 
 $(function () {
     var values = [], labels = [];
@@ -151,5 +151,7 @@ $(function () {
       labels.push(_type); values.push(state_count[_type]);
     }
     console.log(labels, values);
-    Raphael("summary", "215px", "215px").pieChart(215, 215, 100, values, labels, "#777");
+    //Raphael(10, 50, 640, 480).pieChart(320, 240, 100, [55, 20, 13, 32, 5, 1, 2]); 
+    document.querySelector("#summary").style.backgroundColor = "#999";
+    Raphael("summary").pieChart(115, 115, 50, values, labels, "#fff");
 });
