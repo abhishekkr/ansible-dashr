@@ -31,3 +31,35 @@ var YAMLURI2JSON = function (playbook_uri) {
   return jsyaml.load(data);
 };
 
+/* return list of hosts to be covered by provided yaml */
+function parseHostList(hostlist_yaml){
+  hostlist_yaml = decodeURIComponent(hostlist_yaml);
+  return YAMLURI2JSON(hostlist_yaml);
+}
+
+/*calculate task state counter*/
+function updateStateCounter(taskstate_counter, state){
+  switch (state) {
+  case "unreachable":
+  case "failed":
+    taskstate_counter["Failed"] += 1;
+    break;
+  case "ok":
+    taskstate_counter["Passed"] += 1;
+    break;
+  case "changed":
+    taskstate_counter["Changed"] += 1;
+    break;
+  }
+  return taskstate_counter;
+}
+function calculateTaskStats(hosts_info){
+  var taskstate_counter = {"Passed":0, "Failed":0, "Changed":0};
+  for(var host in hosts_info){
+    var host_info = hosts_info[host];
+    for(var task in host_info){
+      taskstate_counter = updateStateCounter(taskstate_counter, host_info[task]["state"]);
+    }
+  }
+  return taskstate_counter;
+}

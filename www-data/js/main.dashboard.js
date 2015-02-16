@@ -6,13 +6,9 @@ function getBadge(state){
   switch (state) {
   case "unreachable":
   case "failed":
-    state_count["Failed"] += 1;
     return "badge-danger";
+  case "changed":
   case "ok":
-    state_count["Passed"] += 1;
-    return "badge-success";
-  case "ok":
-    state_count["Changed"] += 1;
     return "badge-success";
   default:
     console.log("Sorry, we are out of " + state + ".");
@@ -84,11 +80,6 @@ function publishHostsDetails(hosts_info, state_type){
   return callback_details;
 }
 
-function parseHostList(hostlist_yaml){
-  hostlist_yaml = decodeURIComponent(hostlist_yaml);
-  return YAMLURI2JSON(hostlist_yaml);
-}
-
 function prepareDashboard(callback_dir, host_list, node_id, state_type){
   // update hosts_info
   for(var idx in host_list){
@@ -109,7 +100,6 @@ require following variable pre-defined via dashr-created config/js/main-data.js:
 
 /* parse and update host */
 var state_type = ["all"];
-var state_count = {"Passed":0, "Failed":0, "Changed":0};
 var hosts_info = [];
 var host_list = parseHostList(dashr_log_hostlist);
 
@@ -140,46 +130,8 @@ if (get_vars.hasOwnProperty("host")) {
   prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", state_type);
 }
 
-document.querySelector("#AllCount").innerHTML = " <span style=\"font-style: italic;\">(" + (state_count["Passed"] + state_count["Changed"] + state_count["Failed"]) + " Tasks)</span>";
-document.querySelector("#PassedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (state_count["Passed"]) + " Tasks)</span>";
-document.querySelector("#ChangedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (state_count["Changed"]) + " Tasks)</span>";
-document.querySelector("#FailedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (state_count["Failed"]) + " Tasks)</span>";
-
-$(function () {
-    var pie_data = [];
-    for(var _type in state_count){
-      pie_data.push([_type, state_count[_type]]);
-    }
-
-    $('#summary').highcharts({
-        chart: {
-          plotBackgroundColor: null,
-          plotBorderWidth: null,
-          plotShadow: false
-        },
-        title: {
-          text: 'Summary of run states for Ansible Runs'
-        },
-        tooltip: {
-          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-        },
-        plotOptions: {
-          pie: {
-            allowPointSelect: true,
-            cursor: 'pointer',
-            dataLabels: {
-              enabled: true,
-              format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-              style: {
-                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-              }
-            }
-          }
-        },
-        series: [{
-            type: 'pie',
-            name: 'Browser share',
-            data: pie_data
-          }]
-      });
-  });
+var taskstate_counter = calculateTaskStats(hosts_info);
+document.querySelector("#AllCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"] + taskstate_counter["Changed"] + taskstate_counter["Failed"]) + " Tasks)</span>";
+document.querySelector("#PassedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"]) + " Tasks)</span>";
+document.querySelector("#ChangedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Changed"]) + " Tasks)</span>";
+document.querySelector("#FailedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Failed"]) + " Tasks)</span>";
