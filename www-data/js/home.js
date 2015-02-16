@@ -12,7 +12,7 @@ $(function () {
       pie_data.push([_type, state_count[_type]]);
     }
 
-    $('#summary').highcharts({
+    $('#run_stats').highcharts({
         chart: {
           plotBackgroundColor: null,
           plotBorderWidth: null,
@@ -43,4 +43,8 @@ $(function () {
             data: pie_data
           }]
       });
+
+    $('#peice_map').text("map of peices");
+
+    $('#peice_stat').text("stat of peices");
   });
