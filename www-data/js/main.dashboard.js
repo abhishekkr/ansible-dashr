@@ -59,14 +59,14 @@ function publishHostDetails(host, host_info, state_type){
     }
     _html += "<tr>";
     if(host_added === false){
-      _html += "  <td rowspan=\"" + num_tasks  + "\">" + host + "</td>";
+      _html += "  <td class=\"span2\" rowspan=\"" + num_tasks  + "\">" + host + "</td>";
       host_added = true;
     }
-    _html += "  <td>" + task + "</td>";
-    _html += "  <td><span class=\"badge " + getBadge(host_info[task]["state"]) + "\">" + host_info[task]["state"] + "<span></td>";
-    _html += "  <td>" + taskDetailsToHTML(host_info[task]["details"]) + "</td>";
+    _html += "  <td class=\"span2\">" + task + "</td>";
+    _html += "  <td class=\"span1\"><span class=\"badge " + getBadge(host_info[task]["state"]) + "\">" + host_info[task]["state"] + "<span></td>";
+    _html += "  <td class=\"span4\">" + taskDetailsToHTML(host_info[task]["details"]) + "</td>";
     _html += "</tr>";
-    host = "";
+    //host = "";
   }
   return _html;
 }
