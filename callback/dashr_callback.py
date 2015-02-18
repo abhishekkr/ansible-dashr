@@ -11,13 +11,17 @@ import yaml
 EXTRA_DETAILS = ['cmd', 'command', 'start', 'end', 'delta', 'msg', 'stdout', 'stderr']
 
 
+def utf8ize(something):
+    return str(something).encode('utf-8')
+
+
 def prepare_extra_details(res):
     """ Add EXTRA_DETAIL field matched details to task yaml. """
     details = {}
     if type(res) == type(dict()):
       for field in EXTRA_DETAILS:
         if field in res.keys():
-            details[field] = res[field].encode('utf-8')
+            details[field] = utf8ize(res[field])
     return details
 
 
