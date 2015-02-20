@@ -44,17 +44,27 @@ function updateStateCounter(taskstate_counter, state){
   case "failed":
     taskstate_counter["Failed"] += 1;
     break;
+  case "changed":
   case "ok":
     taskstate_counter["Passed"] += 1;
-    break;
-  case "changed":
-    taskstate_counter["Changed"] += 1;
     break;
   }
   return taskstate_counter;
 }
 function calculateTaskStats(hosts_info){
-  var taskstate_counter = {"Passed":0, "Failed":0, "Changed":0};
+  var taskstate_counter = {"Passed":0, "Failed":0};
+  for(var host in hosts_info){
+    var host_info = hosts_info[host];
+    for(var task in host_info){
+      taskstate_counter = updateStateCounter(taskstate_counter, host_info[task]["state"]);
+    }
+  }
+  return taskstate_counter;
+}
+
+/* calculate detailed logs */
+function calculateTaskStats(hosts_info){
+  var taskstate_counter = {"Passed":0, "Failed":0};
   for(var host in hosts_info){
     var host_info = hosts_info[host];
     for(var task in host_info){

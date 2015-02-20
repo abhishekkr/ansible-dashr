@@ -6,7 +6,7 @@ function getBadge(state){
   switch (state) {
   case "unreachable":
   case "failed":
-    return "badge-danger";
+    return "badge-important";
   case "changed":
   case "ok":
     return "badge-success";
@@ -109,9 +109,6 @@ document.querySelector("#All").onclick = function(){
 document.querySelector("#Passed").onclick = function(){
   prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", ["ok", "changed"]);
 };
-document.querySelector("#Changed").onclick = function(){
-  prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", ["changed"]);
-};
 document.querySelector("#Failed").onclick = function(){
   prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", ["failed", "unreachable", "error"]);
 };
@@ -131,7 +128,6 @@ if (get_vars.hasOwnProperty("host")) {
 }
 
 var taskstate_counter = calculateTaskStats(hosts_info);
-document.querySelector("#AllCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"] + taskstate_counter["Changed"] + taskstate_counter["Failed"]) + " Tasks)</span>";
+document.querySelector("#AllCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"] + taskstate_counter["Failed"]) + " Tasks)</span>";
 document.querySelector("#PassedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"]) + " Tasks)</span>";
-document.querySelector("#ChangedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Changed"]) + " Tasks)</span>";
 document.querySelector("#FailedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Failed"]) + " Tasks)</span>";
