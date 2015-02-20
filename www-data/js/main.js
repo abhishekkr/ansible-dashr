@@ -63,13 +63,28 @@ function calculateTaskStats(hosts_info){
 }
 
 /* calculate detailed logs */
-function calculateTaskStats(hosts_info){
-  var taskstate_counter = {"Passed":0, "Failed":0};
+function calculateDetailedTaskStats(hosts_info){
+  var run_consists_of = {"playbooks":[], "roles":[], "tasks":[], "hosts":[]}
   for(var host in hosts_info){
+    run_consists_of["hosts"].push(host)
     var host_info = hosts_info[host];
     for(var task in host_info){
-      taskstate_counter = updateStateCounter(taskstate_counter, host_info[task]["state"]);
+      var name = task.split(":")
+      if(name.length !=3){
+        console.log(task + " task doesn't suit Playbook:Role:Task sturct");
+        continue;
+      }
+      if (run_consists_of["playbooks"].indexOf(name[0]) < 0) {
+        run_consists_of["playbooks"].push(name[0])
+      }
+      if (run_consists_of["roles"].indexOf(name[1]) < 0 && name[1] != "") {
+        run_consists_of["roles"].push(name[1])
+      }
+      if (run_consists_of["tasks"].indexOf(name[2]) < 0) {
+        run_consists_of["tasks"].push(name[2])
+      }
     }
   }
-  return taskstate_counter;
+
+  return run_consists_of;
 }
