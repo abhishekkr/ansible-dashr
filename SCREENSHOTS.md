@@ -2,7 +2,7 @@
 
 #### Screenshots
 
-* **Dashboard**
+* **Homepage Graphs**
 
 ![Ansible-Dashr HomePage :(](/screenshots/homepage.png "Screenshot of Homepage with some insight graphs")
 ---
