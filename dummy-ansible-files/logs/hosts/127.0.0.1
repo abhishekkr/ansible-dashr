@@ -1,0 +1,12 @@
+sample-playbook::debug:
+  details: {msg: yeah its running, playbook_name: sample-playbook}
+  name: sample-playbook::debug
+  state: ok
+sample-playbook::fail:
+  details: {msg: induced failure to check dashboard reaction, playbook_name: sample-playbook}
+  name: sample-playbook::fail
+  state: failed
+sample-playbook::get_url:
+  details: {msg: file already exists, playbook_name: sample-playbook}
+  name: sample-playbook::get_url
+  state: ok
