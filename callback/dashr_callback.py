@@ -11,18 +11,8 @@ import yaml
 EXTRA_DETAILS = ['cmd', 'command', 'start', 'end', 'delta', 'msg', 'stdout', 'stderr']
 
 
-def utf8ize(something):
-    return str(something).encode('utf-8')
-
-
-def prepare_extra_details(res):
-    """ Add EXTRA_DETAIL field matched details to task yaml. """
-    details = {}
-    if type(res) == type(dict()):
-      for field in EXTRA_DETAILS:
-        if field in res.keys():
-            details[field] = utf8ize(res[field])
-    return details
+def stringify(something):
+    return str(something).encode('ascii','ignore')
 
 
 def refresh_host_yaml(host_yaml, type={}):
@@ -31,9 +21,8 @@ def refresh_host_yaml(host_yaml, type={}):
             yaml.dump(type, f)
 
 
-def state_to_yaml(host_yaml, res, state=None):
+def state_to_yaml(host_yaml, _details):
     """ Update Host yaml log file states. """
-    module = res['invocation']['module_name']
 
     if not os.path.exists(host_yaml):
         refresh_host_yaml(host_yaml)
@@ -41,7 +30,8 @@ def state_to_yaml(host_yaml, res, state=None):
     with open(host_yaml) as f:
         newdct = yaml.load(f)
 
-    newdct[str(module)] = { "state": str(state), "details": prepare_extra_details(res) }
+    newdct[_details["name"]] = _details
+    print newdct
 
     with open(host_yaml, "w") as f:
         yaml.dump(newdct, f)
@@ -61,6 +51,33 @@ def get_host_yaml(host_log, log_dir, host):
         yaml.dump(host_list, f)
 
     return os.path.join(log_dir.strip(), host)
+
+
+def prepare_details(obj, result, state):
+    _module = result['invocation']['module_name']
+    _details = {"state": state, "details": {}}
+
+    if "role_name" in dir(obj.task):
+        if obj.task.role_name:
+            _module = "%s:%s" % (obj.task.role_name, _module)
+            _details["details"]["role_name"] = obj.task.role_name
+        else:
+            _module = ":%s" % (_module)
+
+    if "filename" in dir(obj.playbook):
+        _playbook_filename = stringify(obj.playbook.filename)
+        _playbook = ".".join(_playbook_filename.split('.')[0:-1])
+        _module = "%s:%s" % (_playbook, _module)
+        _details["details"]["playbook_name"] = _playbook
+
+    _details["name"] = stringify(_module)
+
+    if type(result) == type(dict()):
+      for field in EXTRA_DETAILS:
+        if field in result.keys():
+            _details["details"][field] = stringify(result[field])
+
+    return _details
 
 
 class CallbackModule(object):
@@ -85,11 +102,13 @@ class CallbackModule(object):
 
     def runner_on_failed(self, host, res, ignore_errors=False):
         host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        state_to_yaml(host_yaml , res, "failed")
+        _details = prepare_details(self, res, "failed")
+        state_to_yaml(host_yaml, _details)
 
     def runner_on_ok(self, host, res):
         host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        state_to_yaml(host_yaml, res, "ok")
+        _details = prepare_details(self, res, "ok")
+        state_to_yaml(host_yaml, _details)
 
     def runner_on_error(self, host, msg):
         pass
@@ -99,7 +118,8 @@ class CallbackModule(object):
 
     def runner_on_unreachable(self, host, res):
         host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        state_to_yaml(host_yaml, res, "unreachable")
+        _details = prepare_details(self, res, "unreachable")
+        state_to_yaml(host_yaml, _details)
 
     def runner_on_no_hosts(self):
         pass
@@ -110,11 +130,13 @@ class CallbackModule(object):
 
     def runner_on_async_ok(self, host, res, jid):
         host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        state_to_yaml(host_yaml, res, "ok")
+        _details = prepare_details(self, res, "ok")
+        state_to_yaml(host_yaml, _details)
 
     def runner_on_async_failed(self, host, res, jid):
         host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        state_to_yaml(host_yaml, res, "failed")
+        _details = prepare_details(self, res, "failed")
+        state_to_yaml(host_yaml, _details)
 
     def playbook_on_start(self):
         pass
