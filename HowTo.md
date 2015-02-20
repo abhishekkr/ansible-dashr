@@ -6,19 +6,23 @@
 
 > To show details of your own Ansible setup than provided dummy-data, can update config at "<repo>/config/js/main.data.js".
 > The variables here are self-explainatory, but still
+
 For Dashboard:
 > You'll need to set an ENV Variable by name "DASHR_LOG_DIRECTORY" which in case not set, shall be considered as "/var/log/ansible". Make sure Ansible and dashr has access to that path.
 > It also requires you to copy "<REPO>/callback/dashr_callback.py" to your Ansible callback directory. If new to Ansible Callbacks read [Ansible Doc for Callback](http://docs.ansible.com/developing_plugins.html#callbacks) and [@jpmens quick description](http://jpmens.net/2012/09/11/watching-ansible-at-work-callbacks/) on it.
 > * dashr_log_directory: shall be set based on path to DASHR_LOG_DIRECTORY as "{{ DASHR_LOG_DIRECTORY }}/hosts"
 > * dashr_log_hostlist: set it as "{{ DASHR_LOG_DIRECTORY }}/dashr_log_hostlist.yaml"
+
 For Hosts:
 > * inventories: list of names of all inventories to be included
 > * inventories_www_path: web-path for root of Inventory Files
 > * group_vars_www_path: web-path for root of Group Var Files
 > * host_vars_www_path: web-path for root of Host Var Files
+
 For Playbooks:
 > * playbooks: list of all the playbooks to be included
 > * playbooks_www_path: web-path for root of Playbook YAML Files
+
 For Roles:
 > * roles: list of all the roles to be included
 > * roles_www_path: web-path for root of Roles directories
