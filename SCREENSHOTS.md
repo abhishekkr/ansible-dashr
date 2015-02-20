@@ -2,6 +2,13 @@
 
 #### Screenshots
 
+* **Dashboard**
+
+![Ansible-Dashr Dashboard Full View Missing :(](/screenshots/dashboard.png "Screenshot of Dashboard FullRun")
+![Ansible-Dashr Dashboard Full View Missing :(](/screenshots/dashboard.passed.png "Screenshot of Dashboard PassedRun")
+![Ansible-Dashr Dashboard Full View Missing :(](/screenshots/dashboard.failed.png "Screenshot of Dashboard FailedRun")
+---
+
 * **Hosts**
 
 ![Ansible-Dashr Hosts View Missing :(](/screenshots/hosts.png "Screenshot of Host")
