@@ -44,6 +44,10 @@ function taskDetailsToHTML(details){
   return _html;
 }
 
+function isElementInList(element, list){
+  return list.indexOf(element) >= 0
+}
+
 function isElementNotInList(element, list){
   return list.indexOf(element) < 0
 }
@@ -52,7 +56,14 @@ function publishHostDetails(host, host_info, state_type){
   var _html = "";
   console.log(host, host_info);
   var host_added = false;
+
   var num_tasks = Object.keys(host_info).length;
+  for(var task in host_info){
+    if(state_type != "all" && isElementNotInList(host_info[task]["state"], state_type)){
+      num_tasks -= 1;
+    }
+  }
+
   for(var task in host_info){
     if(state_type != "all" && isElementNotInList(host_info[task]["state"], state_type)){
       continue;
