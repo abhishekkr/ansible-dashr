@@ -96,6 +96,11 @@ function VarsUpdatedFromGroup(inventory, group_name, var_dict){
 
 /*** fetch var yaml as json ***/
 function VarYAMLAsJSON(var_path){
+  var child = new RegExp("^(.*):children$");
+  if(child.test(var_path) == true) {
+    var_path = child.exec(var_path)[1];
+  }
+
   var group_vars_filedata = loadURI(var_path);
   if (group_vars_filedata == "") {return {};}
   // replacing only {|} which are not in quotes
