@@ -82,13 +82,26 @@ function publishHostDetails(host, host_info, state_type){
   return _html;
 }
 
+function ifHostHasNoTasksListed(callback_details, state_type){
+  if(callback_details != ""){
+    return callback_details;
+  }
+  if(isElementInList("failed", state_type)){
+    return "<tr><td colspan=\"4\"><h3>Nothing Failed :)</h3></td></tr>"
+  } else if(isElementInList("ok", state_type)){
+    return "<tr><td colspan=\"4\"><h3>Nothing Passed :(</h3></td></tr>"
+  } else {
+    return "<tr><td colspan=\"4\"><h3></h3>Run Something :/</td></tr>"
+  }
+}
+
 function publishHostsDetails(hosts_info, state_type){
   var callback_details = "";
   for(var host in hosts_info){
     host_info = hosts_info[host];
     callback_details += publishHostDetails(host, host_info, state_type);
   }
-  return callback_details;
+  return ifHostHasNoTasksListed(callback_details, state_type);
 }
 
 function prepareDashboard(callback_dir, host_list, node_id, state_type){
