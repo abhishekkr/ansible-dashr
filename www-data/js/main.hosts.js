@@ -69,7 +69,7 @@ function UpdateHostDetailsByVars(hostname, group_name, inventory){
 
   var hostsGroupVarHTML = "";
   for(var _key in host_vars){
-    var _host_vars_html = host_vars[_key].replace(/\{\{/g, "<i>{{").replace(/\}\}/g, "}}</i>");
+    var _host_vars_html = JSON.stringify(host_vars[_key]).replace(/\{\{/g, "<i>{{").replace(/\}\}/g, "}}</i>");
     hostsGroupVarHTML += "<tr><td>" + _key + ":</td><td>" + _host_vars_html  + "</td></tr>"
   }
   return hostsGroupVarHTML;
