@@ -5,6 +5,7 @@ Author: [AbhishekKr <abhikumar@gmail.com>](http://abhishekkr.github.io)
 """
 
 import os
+import sys
 import yaml
 
 
@@ -80,6 +81,12 @@ def prepare_details(obj, result, state):
     return _details
 
 
+def log_error(err_msg, err_file):
+    """ make note of errors instead of failing ansible run cuz of callback"""
+    with open(err_file, "a") as myfile:
+            myfile.write("appended text")
+
+
 class CallbackModule(object):
     """
     This plugin makes use of the following environment variables:
@@ -87,28 +94,38 @@ class CallbackModule(object):
     """
 
     def __init__(self):
-        self.dashr_log_directory = os.getenv('DASHR_LOG_DIRECTORY', '/var/log/ansible')
+        try:
+            self.dashr_log_directory = os.getenv('DASHR_LOG_DIRECTORY', '/var/log/ansible')
 
-        self.dashr_hostlog_directory = os.path.join(self.dashr_log_directory, "hosts")
-        if not os.path.exists(self.dashr_hostlog_directory):
-            os.makedirs(self.dashr_hostlog_directory)
+            self.dashr_hostlog_directory = os.path.join(self.dashr_log_directory, "hosts")
+            if not os.path.exists(self.dashr_hostlog_directory):
+                os.makedirs(self.dashr_hostlog_directory)
 
-        self.dashr_hostlog = os.path.join(self.dashr_log_directory, "dashr_log_hostlist.yaml")
-        if not os.path.exists(self.dashr_hostlog):
-            refresh_host_yaml(self.dashr_hostlog, [])
+            self.dashr_hostlog = os.path.join(self.dashr_log_directory, "dashr_log_hostlist.yaml")
+            self.dashr_errorlog = os.path.join(self.dashr_log_directory, "dashr_log_hostlog.log")
+            if not os.path.exists(self.dashr_hostlog):
+                refresh_host_yaml(self.dashr_hostlog, [])
+        except:
+            log_error(sys.exc_info()[0])
 
     def on_any(self, *args, **kwargs):
         pass
 
     def runner_on_failed(self, host, res, ignore_errors=False):
-        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        _details = prepare_details(self, res, "failed")
-        state_to_yaml(host_yaml, _details)
+        try:
+            host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+            _details = prepare_details(self, res, "failed")
+            state_to_yaml(host_yaml, _details)
+        except:
+            log_error(self.dashr_errorlog, sys.exc_info()[0])
 
     def runner_on_ok(self, host, res):
-        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        _details = prepare_details(self, res, "ok")
-        state_to_yaml(host_yaml, _details)
+        try:
+            host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+            _details = prepare_details(self, res, "ok")
+            state_to_yaml(host_yaml, _details)
+        except:
+            log_error(self.dashr_errorlog, sys.exc_info()[0])
 
     def runner_on_error(self, host, msg):
         pass
@@ -117,9 +134,12 @@ class CallbackModule(object):
         pass
 
     def runner_on_unreachable(self, host, res):
-        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        _details = prepare_details(self, res, "unreachable")
-        state_to_yaml(host_yaml, _details)
+        try:
+            host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+            _details = prepare_details(self, res, "unreachable")
+            state_to_yaml(host_yaml, _details)
+        except:
+            log_error(self.dashr_errorlog, sys.exc_info()[0])
 
     def runner_on_no_hosts(self):
         pass
@@ -127,16 +147,24 @@ class CallbackModule(object):
     def runner_on_async_poll(self, host, res, jid, clock):
         host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
         state_to_yaml(host_yaml, res)
+        except:
+            log_error(self.dashr_errorlog, sys.exc_info()[0])
 
     def runner_on_async_ok(self, host, res, jid):
-        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        _details = prepare_details(self, res, "ok")
-        state_to_yaml(host_yaml, _details)
+        try:
+            host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+            _details = prepare_details(self, res, "ok")
+            state_to_yaml(host_yaml, _details)
+        except:
+            log_error(self.dashr_errorlog, sys.exc_info()[0])
 
     def runner_on_async_failed(self, host, res, jid):
-        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        _details = prepare_details(self, res, "failed")
-        state_to_yaml(host_yaml, _details)
+        try:
+            host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+            _details = prepare_details(self, res, "failed")
+            state_to_yaml(host_yaml, _details)
+        except:
+            log_error(self.dashr_errorlog, sys.exc_info()[0])
 
     def playbook_on_start(self):
         pass
