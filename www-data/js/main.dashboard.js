@@ -115,6 +115,35 @@ function prepareDashboard(callback_dir, host_list, node_id, state_type){
   document.querySelector(node_id).innerHTML = callback_details;
 }
 
+function get_host_info(hostname, host_info_list){
+  var hosts_info = [];
+  for(var info_idx in host_info_list){
+    hosts_info.push(
+      {
+        "hostname": hostname,
+        "taskname": host_info_list[info_idx]['name'],
+        "taskstate": host_info_list[info_idx]['state'],
+        "taskdetails": taskDetailsToHTML(host_info_list[info_idx]['details']),
+      }
+    ) ;
+  }
+  return hosts_info;
+}
+
+function get_dashboard_values(callback_dir, host_list, node_id, state_type){
+  var hosts_info = [];
+  // update hosts_info
+  for(var host_idx in host_list){
+    console.log("Publish results for", host_list[host_idx], "under", node_id);
+    var host_yaml_uri = decodeURIComponent(callback_dir + "/" + host_list[host_idx]);
+    var host_info_list = YAMLURI2JSON(host_yaml_uri);
+    var host_info = get_host_info(host_list[host_idx], host_info_list);
+    hosts_info = hosts_info.concat(host_info);
+  }
+    console.log(hosts_info[0]);
+
+  return hosts_info;
+}
 
 /*********************** main() *******************
 require following variable pre-defined via dashr-created config/js/main-data.js:
@@ -124,8 +153,8 @@ require following variable pre-defined via dashr-created config/js/main-data.js:
 
 /* parse and update host */
 var state_type = ["all"];
-var hosts_info = [];
 var host_list = parseHostList(dashr_log_hostlist);
+var dashboard_values = [];
 
 document.querySelector("#All").onclick = function(){
   prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", ["all"]);
@@ -146,12 +175,25 @@ if (get_vars.hasOwnProperty("host")) {
   if(! hosts_info.hasOwnProperty(q_host)){
     hosts_info[q_host] = YAMLURI2JSON([q_host]);
   }
-  prepareDashboard(dashr_log_directory, [q_host], '#callbackDetails', state_type)
+  dashboard_values = get_dashboard_values(dashr_log_directory, [q_host], "#callbackDetails", state_type);
 } else {
-  prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", state_type);
+  dashboard_values = get_dashboard_values(dashr_log_directory, host_list, "#callbackDetails", state_type);
 }
+
+
+/* listjs preparations */
+var dashboard_options = {
+  valueNames: [ 'hostname', 'taskname', 'taskstate', 'taskdetails' ],
+  item: '<li>Host: <span class="hostname"></span><br/>Task: <span class="taskname"></span><br/>State: <span class="taskstate"></span><p class="taskdetails"></p></li>'
+};
+
+/*************************
 
 var taskstate_counter = calculateTaskStats(hosts_info);
 document.querySelector("#AllCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"] + taskstate_counter["Failed"]) + " Tasks)</span>";
 document.querySelector("#PassedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"]) + " Tasks)</span>";
 document.querySelector("#FailedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Failed"]) + " Tasks)</span>";
+*******************/
+
+/************** list populate ********************/
+var dashboard = new List('callbackDetails', dashboard_options, dashboard_values);
