@@ -2,6 +2,7 @@
  *  specific to Hosts Callback YAML Log File listing
 *********/
 
+/* return bootstrap badge class based on state */
 function getBadge(state){
   switch (state) {
   case "unreachable":
@@ -35,6 +36,7 @@ function toggleDashboardTaskDetails(self){
   }
 }
 
+/* convert passed task details-dict to html */
 function taskDetailsToHTML(details){
   var _html = "<div><div onclick=\"toggleDashboardTaskDetails(this);\"><span class=\"toggle-icon icon-plus-sign\"></span><i class=\"toggle-msg\">show details</i></div><div class=\"task-detail\" style=\"display:none\">";
   for(var detail_type in details){
@@ -44,105 +46,71 @@ function taskDetailsToHTML(details){
   return _html;
 }
 
+/* boolean return if element is in list */
 function isElementInList(element, list){
   return list.indexOf(element) >= 0
 }
 
+/* boolean return if element is not in list */
 function isElementNotInList(element, list){
   return list.indexOf(element) < 0
 }
 
-function publishHostDetails(host, host_info, state_type){
-  var _html = "";
-  console.log(host, host_info);
-  var host_added = false;
-
-  var num_tasks = Object.keys(host_info).length;
-  for(var task in host_info){
-    if(state_type != "all" && isElementNotInList(host_info[task]["state"], state_type)){
-      num_tasks -= 1;
-    }
+/* entry for a host if got no logs till now */
+function ifHostHasNoTasksListed(hostname, state_type){
+  var entry = {
+    "hostname": hostname,
+    "taskstate": "",
+    "taskdetails": ""
+  };
+  if(isElementInList("failed", state_type)){
+    entry["taskname"] = "Nothing Failed :)";
+  } else if(isElementInList("ok", state_type)){
+    entry["taskname"] = "Nothing Passed :(";
+  } else {
+    entry["taskname"] = "Run Something :/";
   }
+  return entry;
+}
 
-  for(var task in host_info){
-    if(state_type != "all" && isElementNotInList(host_info[task]["state"], state_type)){
+/* updating dashboard list for a given host details */
+function get_host_info(dashboard, state_type, hostname, host_info_list){
+  if(host_info_list.length == 0){
+    dashboard.add(hostname, ifHostHasNoTasksListed(state_type));
+    return
+  }
+  for(var info_idx in host_info_list){
+    var _state = host_info_list[info_idx]['state'];
+    taskstate_counter = updateStateCounter(taskstate_counter, _state);
+    if(state_type != "all" && isElementNotInList(_state, state_type)){
       continue;
     }
-    _html += "<tr>";
-    if(host_added === false){
-      _html += "  <td class=\"span2\" rowspan=\"" + num_tasks  + "\">" + host + "</td>";
-      host_added = true;
-    }
-    _html += "  <td class=\"span2\">" + task + "</td>";
-    _html += "  <td class=\"span1\"><span class=\"badge " + getBadge(host_info[task]["state"]) + "\">" + host_info[task]["state"] + "<span></td>";
-    _html += "  <td class=\"span4\">" + taskDetailsToHTML(host_info[task]["details"]) + "</td>";
-    _html += "</tr>";
-    //host = "";
-  }
-  return _html;
-}
-
-function ifHostHasNoTasksListed(callback_details, state_type){
-  if(callback_details != ""){
-    return callback_details;
-  }
-  if(isElementInList("failed", state_type)){
-    return "<tr><td colspan=\"4\"><h3>Nothing Failed :)</h3></td></tr>"
-  } else if(isElementInList("ok", state_type)){
-    return "<tr><td colspan=\"4\"><h3>Nothing Passed :(</h3></td></tr>"
-  } else {
-    return "<tr><td colspan=\"4\"><h3></h3>Run Something :/</td></tr>"
-  }
-}
-
-function publishHostsDetails(hosts_info, state_type){
-  var callback_details = "";
-  for(var host in hosts_info){
-    host_info = hosts_info[host];
-    callback_details += publishHostDetails(host, host_info, state_type);
-  }
-  return ifHostHasNoTasksListed(callback_details, state_type);
-}
-
-function prepareDashboard(callback_dir, host_list, node_id, state_type){
-  // update hosts_info
-  for(var idx in host_list){
-    console.log("Publish results for", host_list[idx], "under", node_id);
-    host_yaml_uri = decodeURIComponent(callback_dir + "/" + host_list[idx]);
-    hosts_info[host_list[idx]] = YAMLURI2JSON(host_yaml_uri);
-  }
-  callback_details = publishHostsDetails(hosts_info, state_type);
-  document.querySelector(node_id).innerHTML = callback_details;
-}
-
-function get_host_info(hostname, host_info_list){
-  var hosts_info = [];
-  for(var info_idx in host_info_list){
-    hosts_info.push(
+    dashboard.add(
       {
         "hostname": hostname,
         "taskname": host_info_list[info_idx]['name'],
-        "taskstate": host_info_list[info_idx]['state'],
+        "taskstate": "<span class=\"badge " + getBadge(_state) + "\">" + _state + "<span>",
         "taskdetails": taskDetailsToHTML(host_info_list[info_idx]['details']),
       }
     ) ;
   }
-  return hosts_info;
 }
 
-function get_dashboard_values(callback_dir, host_list, node_id, state_type){
-  var hosts_info = [];
+/* manage update of dashboard for all hosts for given state */
+function get_dashboard_values(callback_dir, host_list, dashboard, state_type){
   // update hosts_info
   for(var host_idx in host_list){
-    console.log("Publish results for", host_list[host_idx], "under", node_id);
     var host_yaml_uri = decodeURIComponent(callback_dir + "/" + host_list[host_idx]);
     var host_info_list = YAMLURI2JSON(host_yaml_uri);
-    var host_info = get_host_info(host_list[host_idx], host_info_list);
-    hosts_info = hosts_info.concat(host_info);
+    get_host_info(dashboard, state_type, host_list[host_idx], host_info_list);
   }
-    console.log(hosts_info[0]);
+}
 
-  return hosts_info;
+/* update task state counter on side-navs */
+function update_task_counter(taskstats){
+  document.querySelector("#AllCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"] + taskstate_counter["Failed"]) + " Tasks)</span>";
+  document.querySelector("#PassedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"]) + " Tasks)</span>";
+  document.querySelector("#FailedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Failed"]) + " Tasks)</span>";
 }
 
 /*********************** main() *******************
@@ -151,20 +119,17 @@ require following variable pre-defined via dashr-created config/js/main-data.js:
 * dashr_log_hostlist : path to yaml of host list resulting on callback
 **************************************************/
 
+/* listjs preparations */
+var dashboard_options = {
+  valueNames: [ 'hostname', 'taskname', 'taskstate', 'taskdetails' ],
+  item: '<li>Host: <span class="hostname"></span><br/>Task: <span class="taskname"></span><br/>State: <span class="taskstate"></span><p class="taskdetails"></p></li>'
+};
+var dashboard_listjs = new List('callbackDetails', dashboard_options);
+
 /* parse and update host */
 var state_type = ["all"];
 var host_list = parseHostList(dashr_log_hostlist);
-var dashboard_values = [];
-
-document.querySelector("#All").onclick = function(){
-  prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", ["all"]);
-};
-document.querySelector("#Passed").onclick = function(){
-  prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", ["ok", "changed"]);
-};
-document.querySelector("#Failed").onclick = function(){
-  prepareDashboard(dashr_log_directory, host_list, "#callbackDetails", ["failed", "unreachable", "error"]);
-};
+var taskstate_counter = {"Passed":0, "Failed":0};
 
 var get_vars = getUrlVars()
 if (get_vars.hasOwnProperty("state")) {
@@ -172,28 +137,26 @@ if (get_vars.hasOwnProperty("state")) {
 }
 if (get_vars.hasOwnProperty("host")) {
   var q_host = decodeURIComponent(get_vars["host"]);
-  if(! hosts_info.hasOwnProperty(q_host)){
-    hosts_info[q_host] = YAMLURI2JSON([q_host]);
-  }
-  dashboard_values = get_dashboard_values(dashr_log_directory, [q_host], "#callbackDetails", state_type);
-} else {
-  dashboard_values = get_dashboard_values(dashr_log_directory, host_list, "#callbackDetails", state_type);
+  host_list = [q_host];
 }
 
 
-/* listjs preparations */
-var dashboard_options = {
-  valueNames: [ 'hostname', 'taskname', 'taskstate', 'taskdetails' ],
-  item: '<li>Host: <span class="hostname"></span><br/>Task: <span class="taskname"></span><br/>State: <span class="taskstate"></span><p class="taskdetails"></p></li>'
+/************** list populate ********************/
+
+document.querySelector("#All").onclick = function(){
+  dashboard_listjs.clear()
+  get_dashboard_values(dashr_log_directory, host_list, dashboard_listjs, ["all"]);
+};
+document.querySelector("#Passed").onclick = function(){
+  dashboard_listjs.clear()
+  get_dashboard_values(dashr_log_directory, host_list, dashboard_listjs, ["ok", "changed"]);
+};
+document.querySelector("#Failed").onclick = function(){
+  dashboard_listjs.clear()
+  get_dashboard_values(dashr_log_directory, host_list, dashboard_listjs, ["failed", "unreachable", "error"]);
 };
 
-/*************************
 
-var taskstate_counter = calculateTaskStats(hosts_info);
-document.querySelector("#AllCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"] + taskstate_counter["Failed"]) + " Tasks)</span>";
-document.querySelector("#PassedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Passed"]) + " Tasks)</span>";
-document.querySelector("#FailedCount").innerHTML = " <span style=\"font-style: italic;\">(" + (taskstate_counter["Failed"]) + " Tasks)</span>";
-*******************/
+get_dashboard_values(dashr_log_directory, host_list, dashboard_listjs, state_type);
+update_task_counter(taskstate_counter);
 
-/************** list populate ********************/
-var dashboard = new List('callbackDetails', dashboard_options, dashboard_values);
