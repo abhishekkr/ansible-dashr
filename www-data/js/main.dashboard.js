@@ -122,7 +122,9 @@ require following variable pre-defined via dashr-created config/js/main-data.js:
 /* listjs preparations */
 var dashboard_options = {
   valueNames: [ 'hostname', 'taskname', 'taskstate', 'taskdetails' ],
-  item: '<li>Host: <span class="hostname"></span><br/>Task: <span class="taskname"></span><br/>State: <span class="taskstate"></span><p class="taskdetails"></p></li>'
+  item: '<li>Host: <span class="hostname"></span><br/>Task: <span class="taskname"></span><br/>State: <span class="taskstate"></span><p class="taskdetails"></p></li>',
+  page: 7,
+  plugins: [ ListPagination({}) ]
 };
 var dashboard_listjs = new List('callbackDetails', dashboard_options);
 
