@@ -10,8 +10,9 @@
 * **Dashboard**
 
 ![Ansible-Dashr Dashboard Full View Missing :(](/screenshots/dashboard.png "Screenshot of Dashboard FullRun")
-![Ansible-Dashr Dashboard Full View Missing :(](/screenshots/dashboard.passed.png "Screenshot of Dashboard PassedRun")
-![Ansible-Dashr Dashboard Full View Missing :(](/screenshots/dashboard.failed.png "Screenshot of Dashboard FailedRun")
+![Ansible-Dashr Dashboard Passed-Only View Missing :(](/screenshots/dashboard.passed.png "Screenshot of Dashboard PassedRun")
+![Ansible-Dashr Dashboard Failed-Only View Missing :(](/screenshots/dashboard.failed.png "Screenshot of Dashboard FailedRun")
+![Ansible-Dashr Dashboard Search View Missing :(](/screenshots/dashboard.searched.png "Screenshot of Dashboard Search")
 ---
 
 * **Hosts**
