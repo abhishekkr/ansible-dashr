@@ -32,7 +32,6 @@ def state_to_yaml(host_yaml, _details):
         newdct = yaml.load(f)
 
     newdct[_details["name"]] = _details
-    print newdct
 
     with open(host_yaml, "w") as f:
         yaml.dump(newdct, f)
@@ -55,8 +54,11 @@ def get_host_yaml(host_log, log_dir, host):
 
 
 def prepare_details(obj, result, state):
-    _module = result['invocation']['module_name']
     _details = {"state": state, "details": {}}
+    if type(result) == type(dict()):
+        return _details
+
+    _module = result['invocation']['module_name']
 
     if "role_name" in dir(obj.task):
         if obj.task.role_name:
@@ -73,18 +75,17 @@ def prepare_details(obj, result, state):
 
     _details["name"] = stringify(_module)
 
-    if type(result) == type(dict()):
-      for field in EXTRA_DETAILS:
-        if field in result.keys():
-            _details["details"][field] = stringify(result[field])
+    for field in EXTRA_DETAILS:
+      if field in result.keys():
+          _details["details"][field] = stringify(result[field])
 
     return _details
 
 
-def log_error(err_msg, err_file):
+def log_error(err_file, err_msg):
     """ make note of errors instead of failing ansible run cuz of callback"""
-    with open(err_file, "a") as myfile:
-            myfile.write("appended text")
+    with open(str(err_file), "a") as myfile:
+            myfile.write(str(err_msg))
 
 
 class CallbackModule(object):
@@ -106,7 +107,11 @@ class CallbackModule(object):
             if not os.path.exists(self.dashr_hostlog):
                 refresh_host_yaml(self.dashr_hostlog, [])
         except:
-            log_error(sys.exc_info()[0])
+            print "ERROR: Dashr callback plug-in init failed.\n%s\n" % (sys.exc_info())
+            this_script = os.path.realpath(__file__)
+            os.rename(this_script, "%s.original" % this_script)
+            print "For now we have renamed '%s' to '%s.original'. Report the issue, and re-apply the file once fixed." % (this_script, this_script)
+            sys.exit(0)
 
     def on_any(self, *args, **kwargs):
         pass
@@ -117,7 +122,8 @@ class CallbackModule(object):
             _details = prepare_details(self, res, "failed")
             state_to_yaml(host_yaml, _details)
         except:
-            log_error(self.dashr_errorlog, sys.exc_info()[0])
+            err_msg = "* %s for 'runner_on_failed'\n%s\n---\n\n" % (host, str(sys.exc_info()))
+            log_error(self.dashr_errorlog, err_msg)
 
     def runner_on_ok(self, host, res):
         try:
@@ -125,7 +131,8 @@ class CallbackModule(object):
             _details = prepare_details(self, res, "ok")
             state_to_yaml(host_yaml, _details)
         except:
-            log_error(self.dashr_errorlog, sys.exc_info()[0])
+            err_msg = "* %s for 'runner_on_ok'\n%s\n---\n\n" % (host, str(sys.exc_info()))
+            log_error(self.dashr_errorlog, err_msg)
 
     def runner_on_error(self, host, msg):
         pass
@@ -139,16 +146,19 @@ class CallbackModule(object):
             _details = prepare_details(self, res, "unreachable")
             state_to_yaml(host_yaml, _details)
         except:
-            log_error(self.dashr_errorlog, sys.exc_info()[0])
+            err_msg = "* %s for 'runner_on_unreachable'\n%s\n---\n\n" % (host, str(sys.exc_info()))
+            log_error(self.dashr_errorlog, err_msg)
 
     def runner_on_no_hosts(self):
         pass
 
     def runner_on_async_poll(self, host, res, jid, clock):
-        host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
-        state_to_yaml(host_yaml, res)
+        try:
+            host_yaml = get_host_yaml(self.dashr_hostlog, self.dashr_hostlog_directory, host)
+            state_to_yaml(host_yaml, res)
         except:
-            log_error(self.dashr_errorlog, sys.exc_info()[0])
+            err_msg = "* %s for 'runner_on_async_poll'\n%s\n---\n\n" % (host, str(sys.exc_info()))
+            log_error(self.dashr_errorlog, err_msg)
 
     def runner_on_async_ok(self, host, res, jid):
         try:
@@ -156,7 +166,8 @@ class CallbackModule(object):
             _details = prepare_details(self, res, "ok")
             state_to_yaml(host_yaml, _details)
         except:
-            log_error(self.dashr_errorlog, sys.exc_info()[0])
+            err_msg = "* %s for 'runner_on_async_ok'\n%s\n---\n\n" % (host, str(sys.exc_info()))
+            log_error(self.dashr_errorlog, err_msg)
 
     def runner_on_async_failed(self, host, res, jid):
         try:
@@ -164,7 +175,8 @@ class CallbackModule(object):
             _details = prepare_details(self, res, "failed")
             state_to_yaml(host_yaml, _details)
         except:
-            log_error(self.dashr_errorlog, sys.exc_info()[0])
+            err_msg = "* %s for 'runner_on_async_failed'\n%s\n---\n\n" % (host, str(sys.exc_info()))
+            log_error(self.dashr_errorlog, err_msg)
 
     def playbook_on_start(self):
         pass
