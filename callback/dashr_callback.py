@@ -107,7 +107,7 @@ class CallbackModule(object):
             if not os.path.exists(self.dashr_hostlog):
                 refresh_host_yaml(self.dashr_hostlog, [])
         except:
-            print "ERROR: Dashr callback plug-in init failed.\n%s\n" % (sys.exc_info())
+            print "ERROR: Dashr callback plug-in init failed.\n%s\n" % (str(sys.exc_info()))
             this_script = os.path.realpath(__file__)
             os.rename(this_script, "%s.original" % this_script)
             print "For now we have renamed '%s' to '%s.original'. Report the issue, and re-apply the file once fixed." % (this_script, this_script)
