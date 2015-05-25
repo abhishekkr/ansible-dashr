@@ -9,7 +9,8 @@ THISDIR=$(dirname $0)
 # go install -v -a std
 # go build dashr.go
 
-GOARCH=amd64
-GOOS=linux
+export CGO_ENABLED=0
+export GOARCH=amd64
+export GOOS=linux
 mkdir -p $THISDIR/pkg
 go build -o $THISDIR/pkg/dashr $THISDIR/dashr.go
