@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+func redirect(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/www-data", 301)
+}
+
 func main() {
 	dashr_ip := flag.String("fqdn", "127.0.0.1", "IP/FQDN to run HTTP listener at")
 	dashr_port := flag.String("http", "8001", "port to run HTTP listener at")
@@ -29,6 +33,7 @@ func main() {
 	config_fs := http.FileServer(http.Dir(*dashr_config))
 	http.Handle(dashr_config_uri, http.StripPrefix(dashr_config_uri, config_fs))
 
+	http.HandleFunc("/", redirect)
 	log.Println("Ansible Dashr @", connection_string)
 	if err := http.ListenAndServe(connection_string, nil); err != nil {
 		fmt.Println("ERROR: Failed to start server.", err.Error())
